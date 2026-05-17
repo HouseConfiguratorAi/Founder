@@ -28,14 +28,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg-primary);color:var(--tex
 
 /* Login gate */
 #login-gate{position:fixed;inset:0;background:var(--bg-primary);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:24px}
-.gate-box{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:40px 36px;width:100%;max-width:380px;text-align:center}
-.gate-logo{font-size:28px;font-weight:900;color:var(--accent-bright);margin-bottom:8px;letter-spacing:-.5px}
-.gate-sub{font-size:13px;color:var(--text-secondary);margin-bottom:28px}
-.gate-input{width:100%;padding:12px 16px;background:var(--bg-primary);border:1px solid var(--border);border-radius:10px;color:var(--text-primary);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s;margin-bottom:14px}
+.gate-box{text-align:center;width:100%;max-width:340px}
+.gate-logo{font-size:32px;font-weight:900;color:var(--accent-bright);letter-spacing:-.5px;margin-bottom:28px}
+.gate-row{display:flex;gap:8px;align-items:center}
+.gate-input{flex:1;padding:12px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;color:var(--text-primary);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s}
 .gate-input:focus{border-color:var(--accent)}
-.gate-btn{width:100%;padding:12px;background:linear-gradient(135deg,#4f46e5,#6366f1);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:var(--transition)}
+.gate-btn{padding:12px 18px;background:linear-gradient(135deg,#4f46e5,#6366f1);border:none;border-radius:10px;color:#fff;font-size:18px;font-weight:700;cursor:pointer;transition:var(--transition);line-height:1}
 .gate-btn:hover{opacity:.9}
-.gate-err{font-size:12px;color:var(--red);margin-top:8px;display:none}
+.gate-err{font-size:12px;color:var(--red);margin-top:10px;display:none}
 
 /* Top bar */
 #topbar{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:var(--bg-card);border-bottom:1px solid var(--border);z-index:100;align-items:center;padding:0 24px;gap:16px}
@@ -397,10 +397,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg-primary);color:var(--tex
 <div id="login-gate">
   <div class="gate-box">
     <div class="gate-logo">Helvaro</div>
-    <div class="gate-sub">Founder Dashboard — privé toegang</div>
-    <input class="gate-input" id="gate-key-input" type="password" placeholder="API sleutel invoeren..." onkeydown="if(event.key==='Enter')gateLogin()">
-    <button class="gate-btn" onclick="gateLogin()">Inloggen</button>
-    <div class="gate-err" id="gate-err">Ongeldige sleutel — probeer opnieuw</div>
+    <div class="gate-row">
+      <input class="gate-input" id="gate-key-input" type="password" placeholder="Voer je sleutel in" onkeydown="if(event.key==='Enter')gateLogin()">
+      <button class="gate-btn" onclick="gateLogin()">→</button>
+    </div>
+    <div class="gate-err" id="gate-err">Ongeldige sleutel</div>
   </div>
 </div>
 
