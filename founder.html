@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Helvaro Founder Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary:#080c14;--bg-card:#0d1117;--bg-card-alt:#161b22;--bg-card-hover:#1c2333;
+  --blue-primary:#6366f1;--blue-bright:#818cf8;--cyan:#a5b4fc;--green:#22c55e;
+  --red:#f43f5e;--orange:#f59e0b;--accent:#6366f1;--accent-bright:#818cf8;
+  --text:#e6edf3;--text-primary:#e6edf3;--text-secondary:#8b949e;--text-muted:#3d444d;
+  --border:#21262d;--border-bright:#30363d;
+  --shadow:0 8px 32px rgba(0,0,0,.6);--shadow-card:0 1px 3px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.04);
+  --transition:all .15s cubic-bezier(.4,0,.2,1);--radius:12px;--radius-sm:8px;
+}
+[data-theme="light"] {
+  --bg-primary:#eef0f6;--bg-card:#fff;--bg-card-alt:#f5f6fb;--bg-card-hover:#eff1f8;
+  --accent:#4f46e5;--accent-bright:#6366f1;--text:#0f1117;--text-primary:#0f1117;
+  --text-secondary:#5c6478;--text-muted:#a0aab8;--border:#dde1ed;--border-bright:#c8cede;
+  --shadow:0 1px 3px rgba(15,17,40,.06),0 6px 20px rgba(15,17,40,.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{font-family:'Inter',sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
+
+/* Login gate */
+#login-gate{position:fixed;inset:0;background:var(--bg-primary);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:24px}
+.gate-box{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:40px 36px;width:100%;max-width:380px;text-align:center}
+.gate-logo{font-size:28px;font-weight:900;color:var(--accent-bright);margin-bottom:8px;letter-spacing:-.5px}
+.gate-sub{font-size:13px;color:var(--text-secondary);margin-bottom:28px}
+.gate-input{width:100%;padding:12px 16px;background:var(--bg-primary);border:1px solid var(--border);border-radius:10px;color:var(--text-primary);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s;margin-bottom:14px}
+.gate-input:focus{border-color:var(--accent)}
+.gate-btn{width:100%;padding:12px;background:linear-gradient(135deg,#4f46e5,#6366f1);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:var(--transition)}
+.gate-btn:hover{opacity:.9}
+.gate-err{font-size:12px;color:var(--red);margin-top:8px;display:none}
+
+/* Top bar */
+#topbar{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:var(--bg-card);border-bottom:1px solid var(--border);z-index:100;align-items:center;padding:0 24px;gap:16px}
+.topbar-logo{font-size:16px;font-weight:900;color:var(--accent-bright);letter-spacing:-.3px}
+.topbar-badge{font-size:10px;font-weight:700;background:rgba(99,102,241,.15);color:var(--accent-bright);border:1px solid rgba(99,102,241,.25);padding:3px 8px;border-radius:20px}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.topbar-btn{padding:6px 14px;background:none;border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);font-size:12px;font-weight:600;cursor:pointer;transition:var(--transition)}
+.topbar-btn:hover{color:var(--text-primary);border-color:var(--border-bright)}
+.topbar-theme{padding:6px 10px}
+
+/* Main wrap */
+#app{display:none;padding-top:72px;padding-bottom:60px}
+.fdr-wrap{max-width:1060px;margin:0 auto;padding:0 20px;display:flex;flex-direction:column;gap:24px}
+
+/* Toast */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;min-width:260px;max-width:340px;box-shadow:var(--shadow);pointer-events:all;overflow:hidden;animation:toastIn .35s cubic-bezier(.34,1.56,.64,1) both}
+.toast.dismissing{animation:toastOut .3s ease forwards}
+@keyframes toastIn{from{opacity:0;transform:translateX(100%) scale(.9)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes toastOut{from{opacity:1;transform:translateX(0);max-height:200px}to{opacity:0;transform:translateX(100%);max-height:0;padding:0}}
+.toast-success{border-left:3px solid var(--green)}.toast-error{border-left:3px solid var(--red)}.toast-info{border-left:3px solid var(--blue-bright)}
+.toast-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.toast-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+.toast-success .toast-title{color:var(--green)}.toast-error .toast-title{color:var(--red)}.toast-info .toast-title{color:var(--blue-bright)}
+.toast-message{font-size:12px;color:var(--text-secondary)}
+.toast-close{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;line-height:1;padding:0 4px}
+
+/* Hero */
+.fdr-hero{background:linear-gradient(135deg,rgba(79,70,229,.18) 0%,rgba(99,102,241,.08) 100%);border:1px solid rgba(99,102,241,.2);border-radius:18px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between}
+.fdr-day{font-size:28px;font-weight:800;letter-spacing:-.5px;color:var(--text-primary);line-height:1}
+.fdr-date{font-size:14px;color:var(--text-secondary);margin-top:4px}
+.fdr-subtitle{font-size:12px;color:var(--text-muted);margin-top:8px}
+.fdr-hero-right{text-align:right}
+.fdr-deadline-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted)}
+.fdr-deadline-val{font-size:18px;font-weight:800;color:var(--text-primary);margin-top:2px}
+.fdr-deadline-days{font-size:12px;color:var(--accent-bright);margin-top:2px;font-weight:600}
+
+/* Grid */
+.fdr-main-grid{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start}
+.fdr-right-col{display:flex;flex-direction:column;gap:14px}
+.fdr-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius)}
+.fdr-panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.fdr-panel-title{font-size:13px;font-weight:700;color:var(--text-primary)}
+.fdr-task-progress{font-size:12px;font-weight:600;color:var(--text-muted)}
+.fdr-refresh-btn{background:none;border:none;color:var(--text-muted);font-size:15px;cursor:pointer;line-height:1;padding:2px 4px;border-radius:5px}
+.fdr-refresh-btn:hover{color:var(--text-primary)}
+
+/* Checklist */
+.fdr-checklist{display:flex;flex-direction:column}
+.fdr-task-row{display:flex;align-items:flex-start;gap:12px;padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;user-select:none}
+.fdr-task-row:last-child{border-bottom:none}
+.fdr-task-row:hover{background:var(--bg-card-hover)}
+.fdr-task-row input[type=checkbox]{display:none}
+.fdr-task-check-icon{width:18px;height:18px;border-radius:50%;border:2px solid var(--border-bright);flex-shrink:0;margin-top:2px;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.fdr-task-row.fdr-task-done .fdr-task-check-icon{background:var(--accent);border-color:var(--accent)}
+.fdr-task-row.fdr-task-done .fdr-task-check-icon::after{content:'';width:5px;height:9px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg) translateY(-1px);display:block}
+.fdr-task-body{flex:1;min-width:0}
+.fdr-task-name{font-size:14px;font-weight:500;color:var(--text-primary);line-height:1.3}
+.fdr-task-detail{font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.4}
+.fdr-task-row.fdr-task-done .fdr-task-name{text-decoration:line-through;color:var(--text-muted)}
+.fdr-wie-badge{flex-shrink:0;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;margin-top:2px}
+.fdr-badge-frade{background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.25)}
+.fdr-badge-teljo{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.2)}
+.fdr-badge-beiden{background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.2)}
+.fdr-progress-bar-wrap{height:3px;background:var(--bg-card-alt);border-radius:0 0 var(--radius) var(--radius);overflow:hidden}
+.fdr-progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-bright));transition:width .4s ease;border-radius:99px}
+.fdr-weekend-msg{padding:32px 18px;text-align:center}
+.fdr-weekend-icon{font-size:32px;margin-bottom:10px}
+.fdr-weekend-txt{font-size:15px;font-weight:700;color:var(--text-primary)}
+.fdr-weekend-sub{font-size:12px;color:var(--text-muted);margin-top:6px}
+
+/* Stats grid */
+.fdr-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:var(--radius);overflow:hidden}
+.fdr-stat{background:var(--bg-card);padding:14px 12px}
+.fdr-stat-val{font-size:24px;font-weight:800;line-height:1;margin-bottom:3px}
+.fdr-stat-lbl{font-size:11px;color:var(--text-secondary)}
+
+/* Goal */
+.fdr-goal-panel{padding:16px 18px}
+.fdr-goal-hdr{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:12px}
+.fdr-goal-big{display:flex;align-items:baseline;gap:4px;margin-bottom:10px}
+.fdr-goal-current{font-size:40px;font-weight:900;color:var(--accent-bright);line-height:1}
+.fdr-goal-sep{font-size:22px;color:var(--text-muted)}
+.fdr-goal-target{font-size:22px;font-weight:700;color:var(--text-primary)}
+.fdr-goal-unit{font-size:13px;color:var(--text-secondary);margin-left:4px}
+.fdr-goal-bar-wrap{height:6px;background:var(--bg-card-alt);border-radius:99px;overflow:hidden;margin-bottom:6px}
+.fdr-goal-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#4f46e5,#818cf8);transition:width .6s ease}
+.fdr-goal-pct{font-size:11px;color:var(--text-muted)}
+
+/* MRR */
+.fdr-mrr-panel{padding:14px 18px}
+.fdr-mrr-hdr{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin-bottom:8px}
+.fdr-mrr-val{font-size:34px;font-weight:900;color:#22c55e;line-height:1}
+.fdr-mrr-sub{font-size:11px;color:var(--text-muted);margin-top:4px}
+.fdr-mrr-target{font-size:12px;color:var(--text-secondary);margin-top:8px;display:flex;align-items:center;gap:6px}
+.fdr-profit-divider{border:none;border-top:1px solid var(--border);margin:12px 0}
+.fdr-profit-rows{display:flex;flex-direction:column;gap:5px}
+.fdr-profit-row{display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.fdr-profit-row .lbl{color:var(--text-muted)}
+.fdr-profit-row .val{font-weight:600;color:var(--text-primary)}
+.fdr-profit-row .val.neg{color:var(--red)}
+.fdr-profit-row.total{margin-top:4px;padding-top:6px;border-top:1px solid var(--border)}
+.fdr-profit-row.total .lbl{font-weight:700;color:var(--text-primary);font-size:13px}
+.fdr-profit-row.total .val{font-size:16px;font-weight:900;color:#22c55e}
+.fdr-profit-marge{font-size:11px;color:var(--text-muted);margin-top:4px}
+
+/* Pipeline mini */
+.fdr-pipe-mini{padding:14px 18px}
+.fdr-pipe-mini-cols{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.fdr-pipe-mini-item{display:flex;align-items:center;gap:10px}
+.fdr-pipe-mini-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.fdr-pipe-mini-name{flex:1;font-size:12px;color:var(--text-secondary)}
+.fdr-pipe-mini-count{font-size:13px;font-weight:700;color:var(--text-primary)}
+.fdr-won-lost-row{display:flex;gap:8px}
+.founder-badge-won{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700}
+.founder-badge-lost{background:rgba(244,63,94,.1);color:#f43f5e;border:1px solid rgba(244,63,94,.2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700}
+
+/* Follow-up */
+.fdr-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.fdr-section-hdr h3{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-secondary)}
+.fdr-followup-wrap{display:flex;flex-direction:column;gap:8px}
+.fdr-followup-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:border-color .15s}
+.fdr-followup-item:hover{border-color:rgba(244,63,94,.4)}
+.fdr-followup-item.critical{border-left:3px solid #f43f5e}
+.fdr-followup-item.warning{border-left:3px solid #f59e0b}
+.fdr-followup-name{flex:1;font-size:13px;font-weight:600}
+.fdr-followup-fase{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700}
+.fdr-followup-fase.f0{background:rgba(96,165,250,.12);color:#60a5fa}
+.fdr-followup-fase.f1{background:rgba(251,191,36,.12);color:#fbbf24}
+.fdr-followup-fase.f2{background:rgba(249,115,22,.12);color:#f97316}
+.fdr-followup-days{font-size:11px;font-weight:700;color:#f43f5e;flex-shrink:0}
+
+/* Pipeline kanban */
+.founder-pipeline-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.founder-col{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.founder-col-hdr{padding:10px 14px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.founder-col-badge{background:var(--bg-card-alt);border-radius:20px;padding:2px 8px;font-size:11px}
+.founder-col-body{padding:10px;min-height:80px;display:flex;flex-direction:column;gap:8px}
+.founder-card{background:var(--bg-card-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;cursor:pointer;transition:border-color .15s}
+.founder-card:hover{border-color:rgba(99,102,241,.4)}
+.founder-card-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.founder-card-meta{font-size:11px;color:var(--text-secondary)}
+.founder-col-add{padding:8px 10px;border-top:1px solid var(--border)}
+.founder-col-add button{width:100%;padding:7px;background:none;border:1px dashed var(--border-bright);border-radius:7px;color:var(--text-muted);font-size:12px;cursor:pointer;transition:var(--transition)}
+.founder-col-add button:hover{border-color:var(--accent);color:var(--accent)}
+.founder-card-age{display:inline-block;margin-top:5px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.founder-card-age.age-ok{background:rgba(34,197,94,.1);color:#22c55e}
+.founder-card-age.age-warning{background:rgba(245,158,11,.12);color:#f59e0b}
+.founder-card-age.age-critical{background:rgba(244,63,94,.12);color:#f43f5e}
+.founder-card.has-urgent{border-color:rgba(244,63,94,.35)}
+
+/* Goals */
+.founder-goals-list{display:flex;flex-direction:column;gap:12px}
+.founder-goal{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.founder-goal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.founder-goal-name{font-size:14px;font-weight:600}
+.founder-goal-nums{font-size:13px;color:var(--text-secondary)}
+.founder-goal-bar{height:6px;background:var(--bg-card-alt);border-radius:99px;overflow:hidden}
+.founder-goal-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-bright));transition:width .6s ease}
+.founder-goal-meta{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--text-muted)}
+.founder-btn-sm{padding:6px 14px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25);border-radius:8px;color:var(--accent-bright);font-size:12px;font-weight:600;cursor:pointer;transition:var(--transition)}
+.founder-btn-sm:hover{background:rgba(99,102,241,.22)}
+
+/* AI Advice */
+.founder-ai-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.founder-ai-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.founder-ai-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#818cf8);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.founder-ai-title{font-size:15px;font-weight:700}
+.founder-ai-sub{font-size:12px;color:var(--text-secondary)}
+.founder-ai-output{background:var(--bg-card-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;font-size:13px;line-height:1.7;color:var(--text-primary);white-space:pre-wrap;min-height:60px;display:none;margin-bottom:14px}
+.founder-ai-output.visible{display:block}
+.founder-ai-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:linear-gradient(135deg,#4f46e5,#6366f1);border:none;border-radius:9px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:var(--transition)}
+.founder-ai-btn:hover:not(:disabled){background:linear-gradient(135deg,#4338ca,#818cf8);transform:translateY(-1px)}
+.founder-ai-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Content Hub */
+.fdr-hub-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.fdr-hub-hdr{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border)}
+.fdr-hub-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fdr-hub-title{font-size:14px;font-weight:700}
+.fdr-hub-sub{font-size:11px;color:var(--text-muted);margin-top:1px}
+.fdr-hub-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--bg-card-alt)}
+.fdr-platform-tabs{display:flex;gap:4px;background:var(--bg-primary);border:1px solid var(--border);border-radius:10px;padding:3px}
+.fdr-platform-tab{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:none;color:var(--text-secondary);transition:var(--transition);white-space:nowrap}
+.fdr-platform-tab.active{background:var(--bg-card);color:var(--text-primary);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.fdr-platform-tab.li-active{color:#0077b5}
+.fdr-platform-tab.ig-active{color:#e1306c}
+.fdr-hub-select{padding:7px 10px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:12px;font-family:inherit;outline:none;cursor:pointer}
+.fdr-hub-select option{background:var(--bg-card)}
+.fdr-hub-gen-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:linear-gradient(135deg,#7c3aed,#6366f1);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:var(--transition);margin-left:auto;white-space:nowrap}
+.fdr-hub-gen-btn:hover:not(:disabled){opacity:.88;transform:translateY(-1px)}
+.fdr-hub-gen-btn:disabled{opacity:.5;cursor:not-allowed}
+.fdr-hub-body{padding:16px 18px}
+.fdr-hub-output{background:var(--bg-card-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;font-size:13px;line-height:1.8;color:var(--text-primary);white-space:pre-wrap;min-height:80px;display:none;margin-bottom:12px;max-height:420px;overflow-y:auto}
+.fdr-hub-output.visible{display:block}
+.fdr-hub-footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fdr-hub-copy-btn,.fdr-hub-regen-btn{display:none;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:var(--transition)}
+.fdr-hub-copy-btn{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.25);color:var(--accent-bright)}
+.fdr-hub-copy-btn.visible{display:inline-flex}
+.fdr-hub-copy-btn:hover{background:rgba(99,102,241,.2)}
+.fdr-hub-regen-btn{background:none;border:1px solid var(--border);color:var(--text-secondary)}
+.fdr-hub-regen-btn.visible{display:inline-flex}
+.fdr-hub-regen-btn:hover{color:var(--text-primary);border-color:var(--border-bright)}
+.fdr-hub-open-btn{display:none;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:var(--transition);text-decoration:none}
+.fdr-hub-open-btn.visible{display:inline-flex}
+.fdr-hub-open-btn.li{background:rgba(10,102,194,.12);border:1px solid rgba(10,102,194,.3);color:#0a66c2}
+.fdr-hub-open-btn.li:hover{background:rgba(10,102,194,.22)}
+.fdr-hub-open-btn.ig{background:rgba(225,48,108,.12);border:1px solid rgba(225,48,108,.3);color:#e1306c}
+.fdr-hub-open-btn.ig:hover{background:rgba(225,48,108,.22)}
+.fdr-hub-empty{padding:24px 0;color:var(--text-muted);font-size:13px;text-align:center;line-height:1.6}
+.fdr-hub-platform-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.fdr-hub-platform-badge.li{background:rgba(0,119,181,.12);color:#0077b5;border:1px solid rgba(0,119,181,.2)}
+.fdr-hub-platform-badge.ig{background:rgba(225,48,108,.1);color:#e1306c;border:1px solid rgba(225,48,108,.2)}
+
+/* DM generator */
+.fdr-dm-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.fdr-dm-hdr{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border)}
+.fdr-dm-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0f766e,#14b8a6);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fdr-dm-title{font-size:14px;font-weight:700}
+.fdr-dm-sub{font-size:11px;color:var(--text-muted)}
+.fdr-dm-controls{display:flex;flex-wrap:wrap;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--bg-card-alt);align-items:center}
+.fdr-dm-select{padding:7px 10px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:12px;font-family:inherit;outline:none;flex:1;min-width:140px}
+.fdr-dm-gen-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:linear-gradient(135deg,#0f766e,#14b8a6);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:var(--transition);white-space:nowrap;flex-shrink:0}
+.fdr-dm-gen-btn:hover:not(:disabled){opacity:.88}
+.fdr-dm-gen-btn:disabled{opacity:.5;cursor:not-allowed}
+.fdr-dm-body{padding:16px 18px}
+.fdr-dm-output{background:var(--bg-card-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;font-size:13px;line-height:1.75;color:var(--text-primary);white-space:pre-wrap;min-height:60px;display:none;margin-bottom:12px}
+.fdr-dm-output.visible{display:block}
+.fdr-dm-copy-btn{display:none;align-items:center;gap:6px;padding:7px 14px;background:rgba(20,184,166,.1);border:1px solid rgba(20,184,166,.25);border-radius:8px;color:#14b8a6;font-size:12px;font-weight:600;cursor:pointer}
+.fdr-dm-copy-btn.visible{display:inline-flex}
+.fdr-dm-copy-btn:hover{background:rgba(20,184,166,.2)}
+.fdr-dm-empty{padding:20px 0;color:var(--text-muted);font-size:13px;text-align:center}
+.fdr-dm-open-btn{display:none;align-items:center;gap:6px;padding:7px 14px;background:rgba(10,102,194,.1);border:1px solid rgba(10,102,194,.25);border-radius:8px;color:#0a66c2;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;margin-left:8px}
+.fdr-dm-open-btn.visible{display:inline-flex}
+.fdr-dm-open-btn:hover{background:rgba(10,102,194,.2)}
+
+/* Outreach tracker */
+.fdr-outreach-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.fdr-outreach-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.fdr-outreach-title{font-size:14px;font-weight:700}
+.fdr-outreach-week{font-size:11px;color:var(--text-muted)}
+.fdr-outreach-body{padding:16px 18px}
+.fdr-outreach-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.fdr-outreach-card{background:var(--bg-card-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:10px}
+.fdr-outreach-num{font-size:26px;font-weight:900;line-height:1;min-width:32px}
+.fdr-outreach-info{flex:1}
+.fdr-outreach-name{font-size:12px;font-weight:600}
+.fdr-outreach-target{font-size:11px;color:var(--text-muted)}
+.fdr-outreach-plus{background:none;border:1px solid var(--border);border-radius:6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;font-weight:700;color:var(--text-secondary);transition:var(--transition);flex-shrink:0}
+.fdr-outreach-plus:hover{background:var(--border);color:var(--text-primary)}
+.fdr-outreach-bar-wrap{height:6px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:8px}
+.fdr-outreach-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#4f46e5,#818cf8);transition:width .4s}
+.fdr-outreach-footer{display:flex;justify-content:space-between;align-items:center}
+.fdr-outreach-pct{font-size:12px;color:var(--text-muted)}
+.fdr-outreach-reset{background:none;border:none;font-size:11px;color:var(--text-muted);cursor:pointer;text-decoration:underline}
+.fdr-outreach-reset:hover{color:var(--red)}
+
+/* Bouw tracker */
+.fdr-bouw-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.fdr-bouw-hdr{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border)}
+.fdr-bouw-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fdr-bouw-title{font-size:14px;font-weight:700}
+.fdr-bouw-sub{font-size:11px;color:var(--text-muted)}
+.fdr-bouw-body{padding:12px 18px}
+.fdr-bouw-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.fdr-bouw-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg-card-alt);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition)}
+.fdr-bouw-item:hover{border-color:#a78bfa44}
+.fdr-bouw-item.done{opacity:.5}
+.fdr-bouw-item.done .fdr-bouw-item-text{text-decoration:line-through}
+.fdr-bouw-cb{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border-bright);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:var(--transition)}
+.fdr-bouw-item.done .fdr-bouw-cb{background:#7c3aed;border-color:#7c3aed}
+.fdr-bouw-item-text{font-size:13px;flex:1}
+.fdr-bouw-tag{font-size:10px;padding:2px 7px;border-radius:99px;font-weight:600;flex-shrink:0}
+.fdr-bouw-tag.fix{background:rgba(239,68,68,.12);color:var(--red)}
+.fdr-bouw-tag.feat{background:rgba(79,70,229,.12);color:var(--accent-bright)}
+.fdr-bouw-tag.test{background:rgba(245,158,11,.12);color:var(--orange)}
+.fdr-bouw-add-row{display:flex;gap:8px}
+.fdr-bouw-add-input{flex:1;padding:7px 10px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:12px;font-family:inherit;outline:none}
+.fdr-bouw-add-btn{padding:7px 14px;background:linear-gradient(135deg,#7c3aed,#a78bfa);border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;cursor:pointer}
+.fdr-bouw-add-btn:hover{opacity:.88}
+.fdr-bouw-progress{font-size:11px;color:var(--text-muted);margin-bottom:10px}
+
+/* Docs hub */
+.fdr-docs-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.fdr-docs-hdr{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);justify-content:space-between}
+.fdr-docs-hdr-left{display:flex;align-items:center;gap:10px}
+.fdr-docs-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0369a1,#38bdf8);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fdr-docs-title{font-size:14px;font-weight:700}
+.fdr-docs-sub{font-size:11px;color:var(--text-muted)}
+.fdr-docs-edit-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--text-muted);cursor:pointer;transition:var(--transition)}
+.fdr-docs-edit-btn:hover{color:var(--text-primary);border-color:var(--border-bright)}
+.fdr-docs-body{padding:16px 18px}
+.fdr-docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.fdr-doc-card{background:var(--bg-card-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:var(--transition);text-decoration:none;position:relative}
+.fdr-doc-card:hover{border-color:#38bdf855;background:rgba(56,189,248,.05);transform:translateY(-1px)}
+.fdr-doc-card-icon{font-size:22px}
+.fdr-doc-card-name{font-size:13px;font-weight:700;color:var(--text-primary)}
+.fdr-doc-card-desc{font-size:11px;color:var(--text-muted);line-height:1.4}
+.fdr-doc-card-badge{position:absolute;top:10px;right:10px;font-size:9px;padding:2px 6px;border-radius:99px;font-weight:700}
+.fdr-doc-card-badge.pdf{background:rgba(239,68,68,.12);color:var(--red)}
+.fdr-doc-card-badge.slides{background:rgba(245,158,11,.12);color:var(--orange)}
+.fdr-doc-card-badge.drive{background:rgba(34,197,94,.12);color:#22c55e}
+.fdr-doc-card-nolink{opacity:.5;cursor:default}
+.fdr-doc-card-nolink:hover{transform:none;background:var(--bg-card-alt);border-color:var(--border)}
+.fdr-docs-embed-wrap{border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:12px;background:var(--bg-card-alt)}
+.fdr-docs-embed-placeholder{padding:32px;text-align:center;color:var(--text-muted);font-size:13px}
+.fdr-docs-embed-placeholder a{color:var(--accent-bright);text-decoration:underline;cursor:pointer}
+.fdr-docs-cfg{display:none;padding:14px 18px;border-top:1px solid var(--border);background:var(--bg-card-alt)}
+.fdr-docs-cfg.open{display:block}
+.fdr-docs-cfg-title{font-size:12px;font-weight:600;margin-bottom:10px}
+.fdr-docs-cfg-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.fdr-docs-cfg-lbl{font-size:11px;color:var(--text-muted);width:100px;flex-shrink:0}
+.fdr-docs-cfg-input{flex:1;padding:6px 10px;background:var(--bg-primary);border:1px solid var(--border);border-radius:7px;color:var(--text-primary);font-size:12px;font-family:inherit;outline:none}
+.fdr-docs-cfg-save{padding:6px 14px;background:linear-gradient(135deg,#0369a1,#38bdf8);border:none;border-radius:7px;color:#fff;font-size:12px;font-weight:700;cursor:pointer}
+
+/* Chat */
+.fdr-chat-box{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.fdr-chat-hdr{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border)}
+.fdr-chat-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#818cf8);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.fdr-chat-hdr-name{font-size:14px;font-weight:700}
+.fdr-chat-hdr-sub{font-size:11px;color:var(--text-muted)}
+.fdr-chat-clear{margin-left:auto;background:none;border:none;color:var(--text-muted);font-size:11px;cursor:pointer;padding:4px 8px;border-radius:6px}
+.fdr-chat-clear:hover{color:var(--text-primary);background:var(--bg-card-alt)}
+.fdr-chat-msgs{height:280px;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
+.fdr-chat-bubble{max-width:82%;padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.55}
+.fdr-chat-bubble.assistant{background:var(--bg-card-alt);border:1px solid var(--border);color:var(--text-primary);align-self:flex-start;border-bottom-left-radius:3px}
+.fdr-chat-bubble.user{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
+.fdr-chat-bubble.typing{opacity:.55;font-style:italic}
+.fdr-chat-input-row{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--border)}
+.fdr-chat-input{flex:1;padding:9px 13px;background:var(--bg-primary);border:1px solid var(--border);border-radius:10px;color:var(--text-primary);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;resize:none;height:38px;overflow:hidden}
+.fdr-chat-input:focus{border-color:var(--accent)}
+.fdr-chat-send{padding:9px 16px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:var(--transition);flex-shrink:0}
+.fdr-chat-send:hover:not(:disabled){background:var(--accent-bright)}
+.fdr-chat-send:disabled{opacity:.5;cursor:not-allowed}
+
+/* Modals */
+.founder-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;display:none;align-items:center;justify-content:center;padding:20px}
+.founder-modal-overlay.open{display:flex}
+.founder-modal{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:420px}
+.founder-modal h3{font-size:16px;font-weight:700;margin-bottom:16px}
+.founder-modal-field{margin-bottom:14px}
+.founder-modal-field label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary);margin-bottom:6px}
+.founder-modal-field input,.founder-modal-field select,.founder-modal-field textarea{width:100%;padding:10px 12px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s}
+.founder-modal-field input:focus,.founder-modal-field select:focus,.founder-modal-field textarea:focus{border-color:var(--accent)}
+.founder-modal-field textarea{resize:vertical;min-height:80px}
+.founder-modal-field select option{background:var(--bg-card)}
+.founder-modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+.founder-modal-cancel{padding:9px 18px;background:var(--bg-card-alt);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);font-size:13px;font-weight:600;cursor:pointer}
+.founder-modal-save{padding:9px 18px;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;cursor:pointer}
+.founder-modal-delete{padding:9px 18px;background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.25);border-radius:8px;color:#f43f5e;font-size:13px;font-weight:600;cursor:pointer;margin-right:auto}
+
+@media(max-width:960px){.fdr-main-grid{grid-template-columns:1fr}.fdr-right-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}.founder-pipeline-cols{grid-template-columns:1fr}}
+@media(max-width:600px){.fdr-hero{flex-direction:column;gap:16px}.fdr-hero-right{text-align:left}.fdr-right-col{grid-template-columns:1fr}.fdr-outreach-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- Login Gate -->
+<div id="login-gate">
+  <div class="gate-box">
+    <div class="gate-logo">Helvaro</div>
+    <div class="gate-sub">Founder Dashboard — privé toegang</div>
+    <input class="gate-input" id="gate-key-input" type="password" placeholder="API sleutel invoeren..." onkeydown="if(event.key==='Enter')gateLogin()">
+    <button class="gate-btn" onclick="gateLogin()">Inloggen</button>
+    <div class="gate-err" id="gate-err">Ongeldige sleutel — probeer opnieuw</div>
+  </div>
+</div>
+
+<!-- Top bar -->
+<div id="topbar">
+  <span class="topbar-logo">Helvaro</span>
+  <span class="topbar-badge">Founder</span>
+  <div class="topbar-right">
+    <button class="topbar-btn topbar-theme" id="btn-theme" onclick="toggleTheme()" title="Thema wisselen">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <button class="topbar-btn" onclick="gateLogout()">Uitloggen</button>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="app">
+<div class="fdr-wrap">
+
+  <!-- Hero -->
+  <div class="fdr-hero">
+    <div class="fdr-hero-left">
+      <div class="fdr-day" id="fdr-dayname">—</div>
+      <div class="fdr-date" id="fdr-date">—</div>
+      <div class="fdr-subtitle">Helvaro — Roadmap naar 5 klanten</div>
+    </div>
+    <div class="fdr-hero-right">
+      <div class="fdr-deadline-label">Deadline</div>
+      <div class="fdr-deadline-val">20 jun 2026</div>
+      <div class="fdr-deadline-days" id="fdr-days-left">— dagen</div>
+    </div>
+  </div>
+
+  <!-- Main grid -->
+  <div class="fdr-main-grid">
+    <!-- Checklist -->
+    <div class="fdr-panel">
+      <div class="fdr-panel-hdr">
+        <span class="fdr-panel-title">Checklist van Vandaag</span>
+        <span class="fdr-task-progress" id="fdr-task-progress">0 / 0 voltooid</span>
+      </div>
+      <div class="fdr-checklist" id="fdr-checklist"><div style="padding:24px 18px;color:var(--text-muted);font-size:13px">Laden...</div></div>
+      <div class="fdr-progress-bar-wrap"><div class="fdr-progress-bar" id="fdr-progress-bar" style="width:0%"></div></div>
+    </div>
+    <!-- Right col -->
+    <div class="fdr-right-col">
+      <div class="fdr-stats-grid fdr-panel">
+        <div class="fdr-stat"><div class="fdr-stat-val" id="f-stat-clients" style="color:var(--accent-bright)">—</div><div class="fdr-stat-lbl">Klanten</div></div>
+        <div class="fdr-stat"><div class="fdr-stat-val" id="f-stat-leads" style="color:var(--green)">—</div><div class="fdr-stat-lbl">Leads/mnd</div></div>
+        <div class="fdr-stat"><div class="fdr-stat-val" id="f-stat-qual" style="color:var(--orange)">—%</div><div class="fdr-stat-lbl">Gekwalificeerd</div></div>
+        <div class="fdr-stat"><div class="fdr-stat-val" id="f-stat-new" style="color:var(--red)">—</div><div class="fdr-stat-lbl">Ongelezen</div></div>
+      </div>
+      <div class="fdr-panel fdr-goal-panel">
+        <div class="fdr-goal-hdr"><span>🎯 Doel — 5 klanten voor 20 jun</span><button class="fdr-refresh-btn" onclick="loadFounderData(true)">↻</button></div>
+        <div class="fdr-goal-big">
+          <span class="fdr-goal-current" id="fdr-goal-current">0</span>
+          <span class="fdr-goal-sep">/</span>
+          <span class="fdr-goal-target">5</span>
+          <span class="fdr-goal-unit">klanten</span>
+        </div>
+        <div class="fdr-goal-bar-wrap"><div class="fdr-goal-bar-fill" id="fdr-goal-bar" style="width:0%"></div></div>
+        <div class="fdr-goal-pct" id="fdr-goal-pct">0% bereikt</div>
+      </div>
+      <div class="fdr-panel fdr-mrr-panel">
+        <div class="fdr-mrr-hdr">Maandelijks Inkomen (MRR)</div>
+        <div class="fdr-mrr-val" id="fdr-mrr-val">€0</div>
+        <div class="fdr-mrr-sub" id="fdr-mrr-sub">0 betalende klanten</div>
+        <div class="fdr-mrr-target"><span>→</span><span id="fdr-mrr-target">Doel: €1.245/mnd bij 5 klanten</span></div>
+        <hr class="fdr-profit-divider">
+        <div class="fdr-profit-rows">
+          <div class="fdr-profit-row"><span class="lbl">Vaste kosten</span><span class="val neg" id="fdr-cost-fixed">-€58</span></div>
+          <div class="fdr-profit-row"><span class="lbl">Variabele kosten</span><span class="val neg" id="fdr-cost-var">-€0</span></div>
+          <div class="fdr-profit-row total"><span class="lbl">Nettowinst</span><span class="val" id="fdr-profit-val">€0</span></div>
+        </div>
+        <div class="fdr-profit-marge" id="fdr-profit-marge">Marge: —%</div>
+      </div>
+      <div class="fdr-panel fdr-pipe-mini">
+        <div class="fdr-panel-title" style="margin-bottom:12px">Pipeline</div>
+        <div class="fdr-pipe-mini-cols" id="fdr-pipe-mini-cols"></div>
+        <div class="fdr-won-lost-row">
+          <span class="founder-badge-won" id="pipe-won-badge">✓ 0 Gewonnen</span>
+          <span class="founder-badge-lost" id="pipe-lost-badge">✗ 0 Verloren</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Follow-up alerts -->
+  <div id="fdr-followup-section" style="display:none">
+    <div class="fdr-section-hdr">
+      <h3>⚠️ Vandaag opvolgen</h3>
+      <span style="font-size:11px;color:var(--text-muted)" id="fdr-followup-count"></span>
+    </div>
+    <div class="fdr-followup-wrap" id="fdr-followup-list"></div>
+  </div>
+
+  <!-- Pipeline kanban -->
+  <div>
+    <div class="fdr-section-hdr"><h3>Sales Pipeline</h3></div>
+    <div class="founder-pipeline-cols">
+      <div class="founder-col">
+        <div class="founder-col-hdr" style="border-top:3px solid #60a5fa">Gecontacteerd<span class="founder-col-badge" id="pipe-count-0">0</span></div>
+        <div class="founder-col-body" id="pipe-col-0"></div>
+        <div class="founder-col-add"><button onclick="openPipeModal(null,'Gecontacteerd')">+ Toevoegen</button></div>
+      </div>
+      <div class="founder-col">
+        <div class="founder-col-hdr" style="border-top:3px solid #fbbf24">Geïnteresseerd<span class="founder-col-badge" id="pipe-count-1">0</span></div>
+        <div class="founder-col-body" id="pipe-col-1"></div>
+        <div class="founder-col-add"><button onclick="openPipeModal(null,'Geïnteresseerd')">+ Toevoegen</button></div>
+      </div>
+      <div class="founder-col">
+        <div class="founder-col-hdr" style="border-top:3px solid #f97316">Beslissing<span class="founder-col-badge" id="pipe-count-2">0</span></div>
+        <div class="founder-col-body" id="pipe-col-2"></div>
+        <div class="founder-col-add"><button onclick="openPipeModal(null,'Beslissing')">+ Toevoegen</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Goals -->
+  <div>
+    <div class="fdr-section-hdr"><h3>Doelen</h3><button class="founder-btn-sm" onclick="openGoalModal(null)">+ Doel</button></div>
+    <div class="founder-goals-list" id="founder-goals-list"><div style="color:var(--text-muted);font-size:13px">Laden...</div></div>
+  </div>
+
+  <!-- AI Advice -->
+  <div class="founder-ai-box">
+    <div class="founder-ai-header">
+      <div class="founder-ai-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+      <div><div class="founder-ai-title">Wat moet ik nu doen?</div><div class="founder-ai-sub">AI-advies op basis van uw huidige metrics</div></div>
+    </div>
+    <div class="founder-ai-output" id="founder-ai-output"></div>
+    <button class="founder-ai-btn" id="founder-ai-btn" onclick="getFounderAdvice()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Genereer advies
+    </button>
+  </div>
+
+  <!-- Content Hub -->
+  <div class="fdr-hub-box">
+    <div class="fdr-hub-hdr">
+      <div class="fdr-hub-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+      <div><div class="fdr-hub-title">Content Hub</div><div class="fdr-hub-sub" id="fdr-hub-sub">LinkedIn & Instagram posts</div></div>
+    </div>
+    <div class="fdr-hub-controls">
+      <div class="fdr-platform-tabs">
+        <button class="fdr-platform-tab active li-active" id="fdr-tab-li" onclick="setHubPlatform('linkedin')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </button>
+        <button class="fdr-platform-tab" id="fdr-tab-ig" onclick="setHubPlatform('instagram')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          Instagram
+        </button>
+      </div>
+      <select class="fdr-hub-select" id="fdr-hub-type">
+        <option value="pijnpunt">😤 Pijnpunt</option>
+        <option value="feature">⚡ Feature highlight</option>
+        <option value="resultaat">📊 Resultaten & cijfers</option>
+        <option value="vergelijking">🥊 Oud vs Helvaro</option>
+        <option value="founder">👥 Founder story</option>
+        <option value="update">🔄 Week update</option>
+      </select>
+      <select class="fdr-hub-select" id="fdr-hub-sector">
+        <option value="">Sector van vandaag</option>
+        <option value="marketingbureaus en digitale agencies">Marketingbureaus</option>
+        <option value="vastgoedkantoren en immobureaus">Vastgoed</option>
+        <option value="business coaches en consultants">Coaches & Consultants</option>
+        <option value="KMO's en ondernemers in Gent/Antwerpen">KMO's Gent/Antwerpen</option>
+        <option value="verzekeringskantoren">Verzekeringen</option>
+        <option value="recruitmentbureaus">Recruitment</option>
+      </select>
+      <button class="fdr-hub-gen-btn" id="fdr-hub-btn" onclick="generateContentPost()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Genereer
+      </button>
+    </div>
+    <div class="fdr-hub-body">
+      <div class="fdr-hub-output" id="fdr-hub-output"></div>
+      <div class="fdr-hub-empty" id="fdr-hub-empty">Kies een platform, type en sector — klik op Genereer.</div>
+      <div class="fdr-hub-footer">
+        <button class="fdr-hub-copy-btn" id="fdr-hub-copy" onclick="copyContentPost()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Kopieer
+        </button>
+        <button class="fdr-hub-regen-btn" id="fdr-hub-regen" onclick="generateContentPost(true)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+          Nieuwe versie
+        </button>
+        <span class="fdr-hub-platform-badge li" id="fdr-hub-badge" style="display:none"></span>
+        <a class="fdr-hub-open-btn li" id="fdr-hub-open-li" href="https://www.linkedin.com/post/new/" target="_blank" rel="noopener">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          Open LinkedIn
+        </a>
+        <a class="fdr-hub-open-btn ig" id="fdr-hub-open-ig" href="https://www.instagram.com/" target="_blank" rel="noopener">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          Open Instagram
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- DM Generator -->
+  <div class="fdr-dm-box">
+    <div class="fdr-dm-hdr">
+      <div class="fdr-dm-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+      <div><div class="fdr-dm-title">Gepersonaliseerde DM / Email</div><div class="fdr-dm-sub">Kies een prospect — AI schrijft een bericht op maat</div></div>
+    </div>
+    <div class="fdr-dm-controls">
+      <select class="fdr-dm-select" id="fdr-dm-prospect" style="flex:2"><option value="">Kies een prospect uit de pipeline...</option></select>
+      <select class="fdr-dm-select" id="fdr-dm-platform" style="flex:1;min-width:110px">
+        <option value="linkedin">LinkedIn DM</option>
+        <option value="email">Cold Email</option>
+      </select>
+      <button class="fdr-dm-gen-btn" id="fdr-dm-btn" onclick="generateDm()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Genereer
+      </button>
+    </div>
+    <div class="fdr-dm-body">
+      <div class="fdr-dm-output" id="fdr-dm-output"></div>
+      <div class="fdr-dm-empty" id="fdr-dm-empty">Selecteer een bedrijf hierboven — de DM wordt geschreven op basis van hun sector en fase.</div>
+      <button class="fdr-dm-copy-btn" id="fdr-dm-copy" onclick="copyDm()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Kopieer
+      </button>
+      <a class="fdr-dm-open-btn" id="fdr-dm-open-li" href="https://www.linkedin.com/messaging/" target="_blank" rel="noopener">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        Open LinkedIn
+      </a>
+    </div>
+  </div>
+
+  <!-- Outreach Tracker -->
+  <div class="fdr-outreach-box">
+    <div class="fdr-outreach-hdr">
+      <div><div class="fdr-outreach-title">📣 Outreach Teller — Teljo</div><div class="fdr-outreach-week" id="fdr-outreach-week">Week van —</div></div>
+      <button class="fdr-outreach-reset" onclick="resetOutreach()">Week resetten</button>
+    </div>
+    <div class="fdr-outreach-body">
+      <div class="fdr-outreach-grid">
+        <div class="fdr-outreach-card"><div class="fdr-outreach-num" id="or-dms" style="color:#4f46e5">0</div><div class="fdr-outreach-info"><div class="fdr-outreach-name">LinkedIn DMs</div><div class="fdr-outreach-target">Doel: 20/week</div></div><button class="fdr-outreach-plus" onclick="logOutreach('dms')">+</button></div>
+        <div class="fdr-outreach-card"><div class="fdr-outreach-num" id="or-emails" style="color:#0a66c2">0</div><div class="fdr-outreach-info"><div class="fdr-outreach-name">Cold Emails</div><div class="fdr-outreach-target">Doel: 10/week</div></div><button class="fdr-outreach-plus" onclick="logOutreach('emails')">+</button></div>
+        <div class="fdr-outreach-card"><div class="fdr-outreach-num" id="or-demos" style="color:#22c55e">0</div><div class="fdr-outreach-info"><div class="fdr-outreach-name">Demo's gehad</div><div class="fdr-outreach-target">Doel: 3/week</div></div><button class="fdr-outreach-plus" onclick="logOutreach('demos')">+</button></div>
+        <div class="fdr-outreach-card"><div class="fdr-outreach-num" id="or-follows" style="color:#f97316">0</div><div class="fdr-outreach-info"><div class="fdr-outreach-name">Follow-ups</div><div class="fdr-outreach-target">Doel: 10/week</div></div><button class="fdr-outreach-plus" onclick="logOutreach('follows')">+</button></div>
+      </div>
+      <div class="fdr-outreach-footer"><span class="fdr-outreach-pct" id="or-total-pct">Totaal: 0 acties</span></div>
+      <div class="fdr-outreach-bar-wrap" style="margin-top:10px"><div class="fdr-outreach-bar-fill" id="or-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- Bouw Tracker -->
+  <div class="fdr-bouw-box">
+    <div class="fdr-bouw-hdr">
+      <div class="fdr-bouw-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+      <div><div class="fdr-bouw-title">Bouw Tracker — Frade</div><div class="fdr-bouw-sub">Technische taken — vink af wat klaar is</div></div>
+    </div>
+    <div class="fdr-bouw-body">
+      <div class="fdr-bouw-progress" id="fdr-bouw-progress">0/0 taken afgewerkt</div>
+      <div class="fdr-bouw-list" id="fdr-bouw-list"></div>
+      <div class="fdr-bouw-add-row">
+        <input class="fdr-bouw-add-input" id="fdr-bouw-input" type="text" placeholder="Nieuwe taak toevoegen..." onkeydown="if(event.key==='Enter')addBouwItem()">
+        <button class="fdr-bouw-add-btn" onclick="addBouwItem()">+ Toevoegen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Documenten Hub -->
+  <div class="fdr-docs-box">
+    <div class="fdr-docs-hdr">
+      <div class="fdr-docs-hdr-left">
+        <div class="fdr-docs-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div><div class="fdr-docs-title">Documenten & Presentaties</div><div class="fdr-docs-sub">Gedeeld tussen Frade &amp; Teljo</div></div>
+      </div>
+      <button class="fdr-docs-edit-btn" onclick="toggleDocsConfig()">⚙ Links instellen</button>
+    </div>
+    <div class="fdr-docs-body">
+      <div class="fdr-docs-embed-wrap" id="fdr-docs-embed-wrap">
+        <div class="fdr-docs-embed-placeholder" id="fdr-docs-embed-placeholder">
+          📊 Plak een Google Slides of Canva embed-link via <a onclick="toggleDocsConfig()">⚙ Links instellen</a> om de presentatie hier te tonen.
+        </div>
+      </div>
+      <div class="fdr-docs-grid">
+        <a class="fdr-doc-card fdr-doc-card-nolink" id="fdr-doc-pitch" target="_blank" rel="noopener"><span class="fdr-doc-card-badge slides">Slides</span><div class="fdr-doc-card-icon">📊</div><div class="fdr-doc-card-name">Pitch Deck</div><div class="fdr-doc-card-desc">Presentatie voor investeerders & klanten</div></a>
+        <a class="fdr-doc-card fdr-doc-card-nolink" id="fdr-doc-contract" target="_blank" rel="noopener"><span class="fdr-doc-card-badge pdf">PDF</span><div class="fdr-doc-card-icon">📝</div><div class="fdr-doc-card-name">Contracten</div><div class="fdr-doc-card-desc">Klantcontracten — 3 maanden + maandelijks</div></a>
+        <a class="fdr-doc-card fdr-doc-card-nolink" id="fdr-doc-prijslijst" target="_blank" rel="noopener"><span class="fdr-doc-card-badge pdf">PDF</span><div class="fdr-doc-card-icon">💰</div><div class="fdr-doc-card-name">Prijslijst</div><div class="fdr-doc-card-desc">Starter €149 · Groei €249 · Agency €399</div></a>
+        <a class="fdr-doc-card fdr-doc-card-nolink" id="fdr-doc-drive" target="_blank" rel="noopener"><span class="fdr-doc-card-badge drive">Drive</span><div class="fdr-doc-card-icon">📁</div><div class="fdr-doc-card-name">Google Drive</div><div class="fdr-doc-card-desc">Alle bestanden, sjablonen en assets</div></a>
+      </div>
+    </div>
+    <div class="fdr-docs-cfg" id="fdr-docs-cfg">
+      <div class="fdr-docs-cfg-title">🔗 Links instellen</div>
+      <div class="fdr-docs-cfg-row"><span class="fdr-docs-cfg-lbl">Presentatie embed</span><input class="fdr-docs-cfg-input" id="cfg-embed" placeholder="Google Slides of Canva embed URL"></div>
+      <div class="fdr-docs-cfg-row"><span class="fdr-docs-cfg-lbl">Pitch Deck</span><input class="fdr-docs-cfg-input" id="cfg-pitch" placeholder="https://docs.google.com/..."></div>
+      <div class="fdr-docs-cfg-row"><span class="fdr-docs-cfg-lbl">Contracten</span><input class="fdr-docs-cfg-input" id="cfg-contract" placeholder="https://drive.google.com/..."></div>
+      <div class="fdr-docs-cfg-row"><span class="fdr-docs-cfg-lbl">Prijslijst</span><input class="fdr-docs-cfg-input" id="cfg-prijslijst" placeholder="https://drive.google.com/..."></div>
+      <div class="fdr-docs-cfg-row"><span class="fdr-docs-cfg-lbl">Google Drive</span><input class="fdr-docs-cfg-input" id="cfg-drive" placeholder="https://drive.google.com/drive/..."></div>
+      <div class="fdr-docs-cfg-row" style="justify-content:flex-end"><button class="fdr-docs-cfg-save" onclick="saveDocsConfig()">Opslaan</button></div>
+    </div>
+  </div>
+
+  <!-- AI Coach Chat -->
+  <div class="fdr-chat-box">
+    <div class="fdr-chat-hdr">
+      <div class="fdr-chat-avatar">🧠</div>
+      <div><div class="fdr-chat-hdr-name">Helvaro Coach</div><div class="fdr-chat-hdr-sub">Vraag me alles over strategie, sales of outreach</div></div>
+      <button class="fdr-chat-clear" onclick="clearCoachChat()">Wis chat</button>
+    </div>
+    <div class="fdr-chat-msgs" id="fdr-chat-msgs">
+      <div class="fdr-chat-bubble assistant">Dag! Ik ben je Helvaro business coach. Stel me een vraag over sales, outreach, demo's of strategie.</div>
+    </div>
+    <div class="fdr-chat-input-row">
+      <textarea class="fdr-chat-input" id="fdr-chat-input" placeholder="Stel een vraag..." rows="1" onkeydown="chatInputKeydown(event)"></textarea>
+      <button class="fdr-chat-send" id="fdr-chat-send" onclick="sendCoachMessage()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+</div><!-- /fdr-wrap -->
+</div><!-- /app -->
+
+<!-- Modals -->
+<div class="founder-modal-overlay" id="pipe-modal-overlay">
+  <div class="founder-modal">
+    <h3 id="pipe-modal-title">Prospect toevoegen</h3>
+    <div class="founder-modal-field"><label>Naam *</label><input id="pm-naam" type="text" placeholder="Jan Janssen"></div>
+    <div class="founder-modal-field"><label>Bedrijf</label><input id="pm-bedrijf" type="text" placeholder="Acme BV"></div>
+    <div class="founder-modal-field"><label>E-mail</label><input id="pm-email" type="email" placeholder="jan@acme.be"></div>
+    <div class="founder-modal-field"><label>Sector</label><input id="pm-sector" type="text" placeholder="Marketing, Vastgoed..."></div>
+    <div class="founder-modal-field"><label>Fase</label>
+      <select id="pm-fase"><option>Gecontacteerd</option><option>Geïnteresseerd</option><option>Beslissing</option><option>Gewonnen</option><option>Verloren</option></select>
+    </div>
+    <div class="founder-modal-field"><label>Notities</label><textarea id="pm-notities" placeholder="Aantekeningen..."></textarea></div>
+    <div class="founder-modal-actions">
+      <button class="founder-modal-delete" id="pm-delete-btn" style="display:none" onclick="deletePipeRecord()">Verwijderen</button>
+      <button class="founder-modal-cancel" onclick="closePipeModal()">Annuleren</button>
+      <button class="founder-modal-save" onclick="savePipeRecord()">Opslaan</button>
+    </div>
+  </div>
+</div>
+<div class="founder-modal-overlay" id="goal-modal-overlay">
+  <div class="founder-modal">
+    <h3 id="goal-modal-title">Doel toevoegen</h3>
+    <div class="founder-modal-field"><label>Doel *</label><input id="gm-doel" type="text" placeholder="5 betalende klanten"></div>
+    <div class="founder-modal-field"><label>Target</label><input id="gm-target" type="number" placeholder="5" min="0"></div>
+    <div class="founder-modal-field"><label>Eenheid</label><input id="gm-eenheid" type="text" placeholder="klanten / € MRR / leads"></div>
+    <div class="founder-modal-field"><label>Deadline</label><input id="gm-deadline" type="date"></div>
+    <div class="founder-modal-actions">
+      <button class="founder-modal-delete" id="gm-delete-btn" style="display:none" onclick="deleteGoalRecord()">Verwijderen</button>
+      <button class="founder-modal-cancel" onclick="closeGoalModal()">Annuleren</button>
+      <button class="founder-modal-save" onclick="saveGoalRecord()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+<script>
+var API = 'https://app.helvaro.pro/api/admin';
+function apiKey() { return localStorage.getItem('hv-founder-key') || ''; }
+
+// ── Gate ──────────────────────────────────────────────────────────────────
+async function gateLogin() {
+  var k = document.getElementById('gate-key-input').value.trim();
+  if (!k) return;
+  var r = await fetch(API, { headers: { 'x-api-key': k } });
+  if (r.ok) {
+    localStorage.setItem('hv-founder-key', k);
+    showApp();
+  } else {
+    document.getElementById('gate-err').style.display = 'block';
+  }
+}
+function gateLogout() {
+  localStorage.removeItem('hv-founder-key');
+  location.reload();
+}
+function showApp() {
+  document.getElementById('login-gate').style.display = 'none';
+  document.getElementById('topbar').style.display = 'flex';
+  document.getElementById('app').style.display = 'block';
+  initTheme();
+  loadFounderData();
+}
+(function() {
+  var k = apiKey();
+  if (k) { document.getElementById('login-gate').style.display = 'none'; document.getElementById('topbar').style.display = 'flex'; document.getElementById('app').style.display = 'block'; initTheme(); loadFounderData(); }
+})();
+
+// ── Theme ─────────────────────────────────────────────────────────────────
+function initTheme() {
+  var saved = localStorage.getItem('hv-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+}
+function toggleTheme() {
+  var cur = document.documentElement.getAttribute('data-theme');
+  var next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('hv-theme', next);
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+function toast(message, type) {
+  type = type || 'info';
+  var icons = { success: '✓', error: '✕', info: 'ℹ' };
+  var titles = { success: 'Gelukt', error: 'Fout', info: 'Info' };
+  var el = document.createElement('div');
+  el.className = 'toast toast-' + type;
+  el.innerHTML = '<div class="toast-header"><span class="toast-title">' + icons[type] + ' ' + titles[type] + '</span><button class="toast-close" onclick="dismissToast(this.closest(\'.toast\'))">✕</button></div><div class="toast-message">' + message + '</div>';
+  document.getElementById('toast-container').appendChild(el);
+  var timer = setTimeout(function() { dismissToast(el); }, 3500);
+  el._timer = timer;
+}
+function dismissToast(el) {
+  if (!el || el.classList.contains('dismissing')) return;
+  clearTimeout(el._timer);
+  el.classList.add('dismissing');
+  setTimeout(function() { el.remove(); }, 300);
+}
+
+// ── escHtml ───────────────────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ── Founder state ─────────────────────────────────────────────────────────
+var founderState = { pipeline: [], goals: [], clients: 0, loaded: false, _pipeEditId: null, _goalEditId: null, _metrics: {} };
+
+async function loadFounderData(force) {
+  if (founderState.loaded && !force) return;
+  founderState.loaded = true;
+  try {
+    var r = await fetch(API, { headers: { 'x-api-key': apiKey() } });
+    if (r.ok) {
+      var d = await r.json();
+      var clients = d.clients || [];
+      founderState.clients = clients.length;
+      var totalLeads = 0, newLeads = 0, qualLeads = 0;
+      clients.forEach(function(c) { totalLeads += (c.totalLeads||0); newLeads += (c.newLeads||0); qualLeads += (c.qualified||0); });
+      var qualPct = totalLeads > 0 ? Math.round(qualLeads/totalLeads*100) : 0;
+      var set = function(id,v) { var el = document.getElementById(id); if (el) el.textContent = v; };
+      set('f-stat-clients', founderState.clients);
+      set('f-stat-leads', totalLeads);
+      set('f-stat-qual', qualPct + '%');
+      set('f-stat-new', newLeads);
+      founderState._metrics = { clients: founderState.clients, leadsMonth: totalLeads, qualified: qualPct, newLeads: newLeads };
+      updateGoalPanel();
+    }
+  } catch(e) {}
+  try {
+    var r2 = await fetch(API + '?section=founder&type=pipeline', { headers: { 'x-api-key': apiKey() } });
+    if (r2.ok) { var d2 = await r2.json(); founderState.pipeline = d2.pipeline || []; renderFounderPipeline(); }
+  } catch(e) {}
+  try {
+    var r3 = await fetch(API + '?section=founder&type=goals', { headers: { 'x-api-key': apiKey() } });
+    if (r3.ok) { var d3 = await r3.json(); founderState.goals = d3.goals || []; renderFounderGoals(); }
+  } catch(e) {}
+  initFounderHeader();
+  renderDailyChecklist();
+  updateGoalPanel();
+  initLinkedInSection();
+  loadChatHistory();
+  initOutreachTracker();
+  initBouwTracker();
+  initDocsHub();
+}
+
+// ── Header ────────────────────────────────────────────────────────────────
+function initFounderHeader() {
+  var days = ['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'];
+  var months = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+  var now = new Date();
+  var dn = document.getElementById('fdr-dayname');
+  var dt = document.getElementById('fdr-date');
+  var dl = document.getElementById('fdr-days-left');
+  if (dn) dn.textContent = days[now.getDay()];
+  if (dt) dt.textContent = now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+  var deadline = new Date('2026-06-20');
+  var daysLeft = Math.ceil((deadline - now) / 86400000);
+  if (dl) dl.textContent = daysLeft > 0 ? daysLeft + ' dagen resterend' : 'Deadline voorbij';
+}
+
+// ── Checklist ─────────────────────────────────────────────────────────────
+var DAILY_TASKS = {
+  1:[{wie:'Teljo',taak:'10 LinkedIn DMs sturen',detail:'Template 1 — bureaus: CNIP, Ants Agency, Bureau 9000, Nouchka Design, SilverLine Studio, Magelaan'},{wie:'Teljo',taak:'Pipeline updaten',detail:'Verplaats wie gereageerd heeft naar Geïnteresseerd'},{wie:'Frade',taak:'Dashboard checken',detail:'Login als elke klant — controleer leads en verwerking'},{wie:'Frade',taak:'Bugs / verbeteringen fixen',detail:'Fix fouten die klanten meldden vorige week'},{wie:'Frade',taak:'Nieuwe klant voorbereiden',detail:'Als iemand ja zei: account aanmaken via /onboard'}],
+  2:[{wie:'Teljo',taak:'10 LinkedIn DMs sturen',detail:'Template 2 — vastgoed: VICUS Vastgoed, Agence Rosseel, Concordia'},{wie:'Teljo',taak:'Follow-up maandag',detail:'Stuur Template 5 naar wie maandag niet reageerde'},{wie:'Teljo',taak:'5 cold emails sturen',detail:'info@cnip.be, info@vicusvastgoed.be, info@concordia.be, hello@antsconnect.be, info@bureau9000.be'},{wie:'Frade',taak:'Calendly integratie testen',detail:'Test flow: lead → WhatsApp → kwalificatie → Calendly'},{wie:'Frade',taak:'WhatsApp response testen',detail:'Stuur test lead via formulier, check response tijd'}],
+  3:[{wie:'Teljo',taak:'Demo calls (geboekte afspraken)',detail:'15-min demo script — doel: gratis proefperiode afsluiten'},{wie:'Teljo',taak:'LinkedIn post publiceren',detail:'"Hoe wij [sector] helpen met AI leadkwalificatie via WhatsApp"'},{wie:'Teljo',taak:'5 extra DMs coaches/consultants',detail:'Opex Consulting (info@opex.be) en gelijkaardige bedrijven'},{wie:'Frade',taak:'Screenshot/video demo flow maken',detail:'Schermopname voor Teljos LinkedIn post'},{wie:'Frade',taak:'App performance controleren',detail:'Vercel logs checken, WhatsApp webhook response times'},{wie:'Frade',taak:'Onboarding flow testen',detail:'Ga naar app.helvaro.pro/onboard — test als nieuwe klant'}],
+  4:[{wie:'Teljo',taak:'Follow-up alle openstaande contacten',detail:'Template 5 naar iedereen zonder definitief antwoord'},{wie:'Teljo',taak:'10 nieuwe DMs sturen',detail:'Nieuwe bedrijven zoeken via LinkedIn regio Gent/Antwerpen'},{wie:'Teljo',taak:'Demo calls',detail:'Geboekte afspraken van eerder deze week'},{wie:'Frade',taak:'Airtable opruimen',detail:'Leads controleren, verouderde leads archiveren'},{wie:'Frade',taak:'Klant support',detail:'Beantwoord technische vragen via WhatsApp/email'},{wie:'Frade',taak:'Nieuwe feature / verbetering',detail:'1 concrete verbetering van dashboard, formulier of WhatsApp'}],
+  5:[{wie:'Frade',taak:'Founder Dashboard openen',detail:'Klik Genereer advies → lees AI aanbeveling'},{wie:'Frade',taak:'Pipeline updaten',detail:'Verplaats prospects naar juiste fase'},{wie:'Frade',taak:'Week samenvatting noteren',detail:'Hoeveel DMs, demos, geïnteresseerd'},{wie:'Teljo',taak:'Deals afsluiten',detail:'Bel iedereen die geïnteresseerd is → push naar contract'},{wie:'Teljo',taak:'Volgende week plannen',detail:'Wie benaderen we maandag, welke sectoren?'},{wie:'Beiden',taak:'Weekly standup (15 min)',detail:'Wat werkte? Wat niet? Wat aanpassen?'}]
+};
+
+function renderDailyChecklist() {
+  var day = new Date().getDay();
+  var tasks = DAILY_TASKS[day];
+  var el = document.getElementById('fdr-checklist');
+  if (!el) return;
+  if (!tasks || !tasks.length) {
+    el.innerHTML = '<div class="fdr-weekend-msg"><div class="fdr-weekend-icon">🎉</div><div class="fdr-weekend-txt">Weekend — geniet ervan!</div><div class="fdr-weekend-sub">Maandag: 10 LinkedIn DMs + dashboard checken</div></div>';
+    updateChecklistProgress(0, 0); return;
+  }
+  var today = new Date().toISOString().slice(0,10);
+  var stored = {};
+  try { stored = JSON.parse(localStorage.getItem('hv-daily-tasks-v2') || '{}'); } catch(e) {}
+  if (stored._date !== today) stored = { _date: today };
+  el.innerHTML = tasks.map(function(t,i) {
+    var done = stored['task-'+i] || false;
+    var wc = t.wie === 'Frade' ? 'fdr-badge-frade' : (t.wie === 'Teljo' ? 'fdr-badge-teljo' : 'fdr-badge-beiden');
+    return '<label class="fdr-task-row'+(done?' fdr-task-done':'')+'" for="fdr-cb-'+i+'">'+
+      '<input type="checkbox" id="fdr-cb-'+i+'"'+(done?' checked':'')+' onchange="toggleDailyTask('+i+')">'+
+      '<div class="fdr-task-check-icon"></div>'+
+      '<div class="fdr-task-body"><div class="fdr-task-name">'+escHtml(t.taak)+'</div><div class="fdr-task-detail">'+escHtml(t.detail)+'</div></div>'+
+      '<span class="fdr-wie-badge '+wc+'">'+escHtml(t.wie)+'</span></label>';
+  }).join('');
+  var doneCount = tasks.filter(function(_,i) { return stored['task-'+i]; }).length;
+  updateChecklistProgress(doneCount, tasks.length);
+}
+
+function toggleDailyTask(idx) {
+  var today = new Date().toISOString().slice(0,10);
+  var stored = {};
+  try { stored = JSON.parse(localStorage.getItem('hv-daily-tasks-v2') || '{}'); } catch(e) {}
+  if (stored._date !== today) stored = { _date: today };
+  var cb = document.getElementById('fdr-cb-'+idx);
+  stored['task-'+idx] = cb ? cb.checked : false;
+  localStorage.setItem('hv-daily-tasks-v2', JSON.stringify(stored));
+  var row = cb ? cb.closest('.fdr-task-row') : null;
+  if (row) row.classList.toggle('fdr-task-done', stored['task-'+idx]);
+  var day = new Date().getDay();
+  var tasks = DAILY_TASKS[day] || [];
+  var done = tasks.filter(function(_,i) { return stored['task-'+i]; }).length;
+  updateChecklistProgress(done, tasks.length);
+}
+
+function updateChecklistProgress(done, total) {
+  var p = document.getElementById('fdr-task-progress');
+  var b = document.getElementById('fdr-progress-bar');
+  if (p) p.textContent = done + ' / ' + total + ' voltooid';
+  if (b) b.style.width = (total > 0 ? Math.round(done/total*100) : 0) + '%';
+}
+
+// ── Pipeline ──────────────────────────────────────────────────────────────
+function cardAgeDays(aangemaakt) {
+  if (!aangemaakt) return 0;
+  return Math.floor((Date.now() - new Date(aangemaakt).getTime()) / 86400000);
+}
+
+function renderFounderPipeline() {
+  var stages = ['Gecontacteerd','Geïnteresseerd','Beslissing'];
+  var thresholds = { 'Gecontacteerd': 5, 'Geïnteresseerd': 3, 'Beslissing': 2 };
+  stages.forEach(function(stage, idx) {
+    var cards = founderState.pipeline.filter(function(p) { return p.fase === stage; });
+    document.getElementById('pipe-count-'+idx).textContent = cards.length;
+    document.getElementById('pipe-col-'+idx).innerHTML = cards.map(function(p) {
+      var days = cardAgeDays(p.aangemaakt);
+      var thresh = thresholds[stage] || 5;
+      var ageClass = days >= thresh*2 ? 'age-critical' : days >= thresh ? 'age-warning' : 'age-ok';
+      var ageLabel = days === 0 ? 'Vandaag' : days + (days === 1 ? ' dag' : ' dagen');
+      var urgent = days >= thresh ? ' has-urgent' : '';
+      return '<div class="founder-card'+urgent+'" onclick="openPipeModal(\''+escHtml(p.id)+'\')">'+
+        '<div class="founder-card-name">'+escHtml(p.naam || p.bedrijf || '—')+'</div>'+
+        (p.bedrijf && p.naam ? '<div class="founder-card-meta">'+escHtml(p.bedrijf)+'</div>' : '')+
+        (p.email ? '<div class="founder-card-meta">'+escHtml(p.email)+'</div>' : '')+
+        '<span class="founder-card-age '+ageClass+'">'+ageLabel+'</span></div>';
+    }).join('');
+  });
+  var won = founderState.pipeline.filter(function(p) { return p.fase === 'Gewonnen'; }).length;
+  var lost = founderState.pipeline.filter(function(p) { return p.fase === 'Verloren'; }).length;
+  document.getElementById('pipe-won-badge').textContent = '✓ '+won+' Gewonnen';
+  document.getElementById('pipe-lost-badge').textContent = '✗ '+lost+' Verloren';
+  renderPipeMini();
+  renderFollowUpAlerts();
+  updateMrrWidget();
+  populateDmDropdown();
+}
+
+function renderPipeMini() {
+  var el = document.getElementById('fdr-pipe-mini-cols');
+  if (!el) return;
+  var stages = [{name:'Gecontacteerd',color:'#60a5fa'},{name:'Geïnteresseerd',color:'#fbbf24'},{name:'Beslissing',color:'#f97316'}];
+  el.innerHTML = stages.map(function(s) {
+    var count = founderState.pipeline.filter(function(p) { return p.fase === s.name; }).length;
+    return '<div class="fdr-pipe-mini-item"><div class="fdr-pipe-mini-dot" style="background:'+s.color+'"></div><div class="fdr-pipe-mini-name">'+escHtml(s.name)+'</div><div class="fdr-pipe-mini-count">'+count+'</div></div>';
+  }).join('');
+}
+
+function renderFollowUpAlerts() {
+  var thresholds = { 'Gecontacteerd': 5, 'Geïnteresseerd': 3, 'Beslissing': 2 };
+  var faseIdx = { 'Gecontacteerd': 'f0', 'Geïnteresseerd': 'f1', 'Beslissing': 'f2' };
+  var urgent = founderState.pipeline.filter(function(p) { return thresholds[p.fase] && cardAgeDays(p.aangemaakt) >= thresholds[p.fase]; });
+  var section = document.getElementById('fdr-followup-section');
+  var list = document.getElementById('fdr-followup-list');
+  if (!section || !list) return;
+  if (!urgent.length) { section.style.display = 'none'; return; }
+  section.style.display = '';
+  var count = document.getElementById('fdr-followup-count');
+  if (count) count.textContent = urgent.length + ' prospect' + (urgent.length > 1 ? 's' : '') + ' wachten op actie';
+  list.innerHTML = urgent.map(function(p) {
+    var days = cardAgeDays(p.aangemaakt);
+    var thresh = thresholds[p.fase] || 5;
+    var cls = days >= thresh*2 ? 'critical' : 'warning';
+    return '<div class="fdr-followup-item '+cls+'" onclick="openPipeModal(\''+escHtml(p.id)+'\')">'+
+      '<div class="fdr-followup-name">'+escHtml(p.naam || p.bedrijf || '—')+'</div>'+
+      '<span class="fdr-followup-fase '+(faseIdx[p.fase]||'f0')+'">'+escHtml(p.fase)+'</span>'+
+      '<span class="fdr-followup-days">'+days+'d</span></div>';
+  }).join('');
+}
+
+function updateMrrWidget() {
+  var avgMrr = 249, fixedCost = 58, varPerClient = 34;
+  var won = founderState.pipeline.filter(function(p) { return p.fase === 'Gewonnen'; }).length;
+  var total = Math.max(won, founderState.clients || 0);
+  var mrr = total * avgMrr;
+  var varCost = total * varPerClient;
+  var profit = mrr - fixedCost - varCost;
+  var marge = mrr > 0 ? Math.round((profit/mrr)*100) : 0;
+  var set = function(id,v) { var el=document.getElementById(id); if(el) el.textContent=v; };
+  set('fdr-mrr-val', '€'+mrr.toLocaleString('nl-BE'));
+  set('fdr-mrr-sub', total+' betalende klant'+(total===1?'':'en'));
+  set('fdr-cost-var', '-€'+varCost.toLocaleString('nl-BE'));
+  var pe = document.getElementById('fdr-profit-val');
+  if (pe) { pe.textContent = (profit>=0?'€':'-€')+Math.abs(profit).toLocaleString('nl-BE'); pe.style.color = profit>=0?'#22c55e':'var(--red)'; }
+  set('fdr-profit-marge', 'Marge: '+(mrr>0?marge+'%':'—%')+' • variabel €'+varPerClient+'/klant');
+}
+
+function updateGoalPanel() {
+  var current = founderState.clients; var target = 5;
+  var pct = Math.min(100, Math.round(current/target*100));
+  var gc = document.getElementById('fdr-goal-current');
+  var gb = document.getElementById('fdr-goal-bar');
+  var gp = document.getElementById('fdr-goal-pct');
+  if (gc) gc.textContent = current;
+  if (gb) gb.style.width = pct + '%';
+  if (gp) gp.textContent = pct + '% bereikt';
+}
+
+// ── Pipeline Modal ────────────────────────────────────────────────────────
+function openPipeModal(id, defaultFase) {
+  founderState._pipeEditId = id;
+  var overlay = document.getElementById('pipe-modal-overlay');
+  var title = document.getElementById('pipe-modal-title');
+  var delBtn = document.getElementById('pm-delete-btn');
+  if (id) {
+    var rec = founderState.pipeline.find(function(p) { return p.id === id; });
+    title.textContent = 'Prospect bewerken';
+    document.getElementById('pm-naam').value = rec ? rec.naam : '';
+    document.getElementById('pm-bedrijf').value = rec ? rec.bedrijf : '';
+    document.getElementById('pm-email').value = rec ? rec.email : '';
+    document.getElementById('pm-sector').value = rec ? (rec.sector||'') : '';
+    document.getElementById('pm-fase').value = rec ? rec.fase : 'Gecontacteerd';
+    document.getElementById('pm-notities').value = rec ? rec.notities : '';
+    delBtn.style.display = '';
+  } else {
+    title.textContent = 'Prospect toevoegen';
+    ['pm-naam','pm-bedrijf','pm-email','pm-sector','pm-notities'].forEach(function(id) { document.getElementById(id).value = ''; });
+    document.getElementById('pm-fase').value = defaultFase || 'Gecontacteerd';
+    delBtn.style.display = 'none';
+  }
+  overlay.classList.add('open');
+}
+function closePipeModal() { document.getElementById('pipe-modal-overlay').classList.remove('open'); }
+async function savePipeRecord() {
+  var naam = document.getElementById('pm-naam').value.trim();
+  if (!naam) { toast('Naam is verplicht', 'error'); return; }
+  var body = {
+    mode: founderState._pipeEditId ? 'pipeline-update' : 'pipeline-create',
+    naam: naam, bedrijf: document.getElementById('pm-bedrijf').value.trim(),
+    email: document.getElementById('pm-email').value.trim(),
+    sector: document.getElementById('pm-sector').value.trim(),
+    fase: document.getElementById('pm-fase').value,
+    notities: document.getElementById('pm-notities').value.trim()
+  };
+  if (founderState._pipeEditId) body.id = founderState._pipeEditId;
+  try {
+    var r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey()}, body: JSON.stringify(body) });
+    var d = await r.json();
+    if (!r.ok) { toast(d.error || 'Fout', 'error'); return; }
+    closePipeModal(); founderState.loaded = false; await loadFounderData(true);
+    toast(body.mode === 'pipeline-create' ? 'Prospect toegevoegd' : 'Bijgewerkt', 'success');
+  } catch(e) { toast('Netwerkfout', 'error'); }
+}
+async function deletePipeRecord() {
+  if (!founderState._pipeEditId) return;
+  if (!confirm('Prospect verwijderen?')) return;
+  try {
+    var r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey()}, body: JSON.stringify({mode:'pipeline-delete',id:founderState._pipeEditId}) });
+    if (!r.ok) { toast('Verwijderen mislukt', 'error'); return; }
+    closePipeModal(); founderState.loaded = false; await loadFounderData(true); toast('Verwijderd', 'success');
+  } catch(e) { toast('Netwerkfout', 'error'); }
+}
+
+// ── Goal Modal ────────────────────────────────────────────────────────────
+function openGoalModal(id) {
+  founderState._goalEditId = id;
+  var overlay = document.getElementById('goal-modal-overlay');
+  var title = document.getElementById('goal-modal-title');
+  var delBtn = document.getElementById('gm-delete-btn');
+  if (id) {
+    var g = founderState.goals.find(function(x) { return x.id === id; });
+    title.textContent = 'Doel bewerken';
+    document.getElementById('gm-doel').value = g ? g.doel : '';
+    document.getElementById('gm-target').value = g ? g.target : '';
+    document.getElementById('gm-eenheid').value = g ? g.eenheid : '';
+    document.getElementById('gm-deadline').value = g ? g.deadline : '';
+    delBtn.style.display = '';
+  } else {
+    title.textContent = 'Doel toevoegen';
+    ['gm-doel','gm-target','gm-eenheid','gm-deadline'].forEach(function(i) { document.getElementById(i).value=''; });
+    delBtn.style.display = 'none';
+  }
+  overlay.classList.add('open');
+}
+function closeGoalModal() { document.getElementById('goal-modal-overlay').classList.remove('open'); }
+async function saveGoalRecord() {
+  var doel = document.getElementById('gm-doel').value.trim();
+  if (!doel) { toast('Doel is verplicht', 'error'); return; }
+  var body = { mode:'goal-save', doel: doel, target: Number(document.getElementById('gm-target').value)||0, eenheid: document.getElementById('gm-eenheid').value.trim(), deadline: document.getElementById('gm-deadline').value, actief: true };
+  if (founderState._goalEditId) body.id = founderState._goalEditId;
+  try {
+    var r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey()}, body: JSON.stringify(body) });
+    var d = await r.json();
+    if (!r.ok) { toast(d.error||'Fout','error'); return; }
+    closeGoalModal(); founderState.loaded=false; await loadFounderData(true); toast('Doel opgeslagen','success');
+  } catch(e) { toast('Netwerkfout','error'); }
+}
+async function deleteGoalRecord() {
+  if (!founderState._goalEditId) return;
+  if (!confirm('Doel verwijderen?')) return;
+  try {
+    var r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey()}, body: JSON.stringify({mode:'goal-delete',id:founderState._goalEditId}) });
+    if (!r.ok) { toast('Verwijderen mislukt','error'); return; }
+    closeGoalModal(); founderState.loaded=false; await loadFounderData(true); toast('Verwijderd','success');
+  } catch(e) { toast('Netwerkfout','error'); }
+}
+
+function renderFounderGoals() {
+  var el = document.getElementById('founder-goals-list');
+  if (!founderState.goals.length) { el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">Geen doelen. Klik op "+ Doel" om te beginnen.</div>'; return; }
+  var today = new Date();
+  el.innerHTML = founderState.goals.map(function(g) {
+    var current = g.eenheid.toLowerCase().includes('klant') ? founderState.clients : 0;
+    var pct = g.target > 0 ? Math.min(100, Math.round(current/g.target*100)) : 0;
+    var daysLeft = g.deadline ? Math.ceil((new Date(g.deadline)-today)/86400000) : null;
+    return '<div class="founder-goal" onclick="openGoalModal(\''+escHtml(g.id)+'\')" style="cursor:pointer">'+
+      '<div class="founder-goal-top"><div class="founder-goal-name">'+escHtml(g.doel)+'</div><div class="founder-goal-nums">'+current+' / '+g.target+' '+escHtml(g.eenheid)+'</div></div>'+
+      '<div class="founder-goal-bar"><div class="founder-goal-fill" style="width:'+pct+'%"></div></div>'+
+      '<div class="founder-goal-meta"><span>'+pct+'%</span>'+(daysLeft!==null?'<span>'+(daysLeft>=0?daysLeft+' dagen':'Verlopen')+'</span>':'')+'</div></div>';
+  }).join('');
+}
+
+// ── AI Advice ─────────────────────────────────────────────────────────────
+async function getFounderAdvice() {
+  var btn = document.getElementById('founder-ai-btn');
+  var out = document.getElementById('founder-ai-output');
+  btn.disabled = true; btn.textContent = 'Genereren...'; out.classList.remove('visible');
+  var stages = founderState.pipeline.reduce(function(acc,p) { acc[p.fase]=(acc[p.fase]||0)+1; return acc; }, {});
+  var context = Object.assign({}, founderState._metrics, {
+    pipeContacted: stages['Gecontacteerd']||0, pipeInterested: stages['Geïnteresseerd']||0,
+    pipeDecision: stages['Beslissing']||0, pipeWon: stages['Gewonnen']||0, goals: founderState.goals
+  });
+  try {
+    var r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey()}, body: JSON.stringify({mode:'ai-advice',context:context}) });
+    var d = await r.json();
+    if (!r.ok) { toast(d.error||'AI fout','error'); } else { out.textContent=d.advice; out.classList.add('visible'); }
+  } catch(e) { toast('Netwerkfout','error'); }
+  btn.disabled=false; btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Genereer advies';
+}
+
+// ── Content Hub ───────────────────────────────────────────────────────────
+var hubState = { platform: 'linkedin' };
+var HUB_DAY_LABELS = {1:'Maandag — Marketingbureaus',2:'Dinsdag — Vastgoed',3:'Woensdag — Coaches',4:'Donderdag — KMO\'s',5:'Vrijdag — Leadgeneratie',0:'Weekend',6:'Weekend'};
+function initLinkedInSection() {
+  var sub = document.getElementById('fdr-hub-sub');
+  if (sub) sub.textContent = HUB_DAY_LABELS[new Date().getDay()] || 'LinkedIn & Instagram';
+  var today = new Date().toISOString().slice(0,10);
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem('hv-hub-post-linkedin-'+today)||'null'); } catch(e) {}
+  if (cached && cached.post) showContentPost(cached.post);
+}
+function setHubPlatform(platform) {
+  hubState.platform = platform;
+  var liTab = document.getElementById('fdr-tab-li');
+  var igTab = document.getElementById('fdr-tab-ig');
+  if (liTab) { liTab.classList.toggle('active', platform==='linkedin'); liTab.classList.toggle('li-active', platform==='linkedin'); }
+  if (igTab) { igTab.classList.toggle('active', platform==='instagram'); igTab.classList.toggle('ig-active', platform==='instagram'); }
+  ['fdr-hub-output','fdr-hub-copy','fdr-hub-regen','fdr-hub-open-li','fdr-hub-open-ig'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.classList.remove('visible');
+  });
+  var out = document.getElementById('fdr-hub-output'); if (out) out.classList.remove('visible');
+  var emp = document.getElementById('fdr-hub-empty'); if (emp) emp.style.display = '';
+  var badge = document.getElementById('fdr-hub-badge'); if (badge) badge.style.display = 'none';
+  var today = new Date().toISOString().slice(0,10);
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem('hv-hub-post-'+platform+'-'+today)||'null'); } catch(e) {}
+  if (cached && cached.post) showContentPost(cached.post);
+}
+function showContentPost(text) {
+  var out = document.getElementById('fdr-hub-output');
+  var emp = document.getElementById('fdr-hub-empty');
+  var copy = document.getElementById('fdr-hub-copy');
+  var regen = document.getElementById('fdr-hub-regen');
+  var badge = document.getElementById('fdr-hub-badge');
+  var openLi = document.getElementById('fdr-hub-open-li');
+  var openIg = document.getElementById('fdr-hub-open-ig');
+  if (out) { out.textContent = text; out.classList.add('visible'); }
+  if (emp) emp.style.display = 'none';
+  if (copy) copy.classList.add('visible');
+  if (regen) regen.classList.add('visible');
+  if (badge) { badge.style.display=''; badge.className='fdr-hub-platform-badge '+(hubState.platform==='instagram'?'ig':'li'); badge.textContent=hubState.platform==='instagram'?'Instagram':'LinkedIn'; }
+  if (hubState.platform==='instagram') { if (openIg) openIg.classList.add('visible'); if (openLi) openLi.classList.remove('visible'); }
+  else { if (openLi) openLi.classList.add('visible'); if (openIg) openIg.classList.remove('visible'); }
+}
+async function generateContentPost(forceNew) {
+  var btn = document.getElementById('fdr-hub-btn');
+  var typeEl = document.getElementById('fdr-hub-type');
+  var sectorEl = document.getElementById('fdr-hub-sector');
+  var contentType = typeEl ? typeEl.value : 'pijnpunt';
+  var sector = sectorEl ? sectorEl.value : '';
+  if (btn) { btn.disabled=true; btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg> Genereren...'; }
+  var out = document.getElementById('fdr-hub-output'); if (out) out.classList.remove('visible');
+  try {
+    var payload = { mode:'content-post', platform:hubState.platform, contentType:contentType };
+    if (sector) payload.sector = sector;
+    var r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey()}, body: JSON.stringify(payload) });
+    var d = await r.json();
+    if (!r.ok) { toast(d.error||'Genereren mislukt','error'); }
+    else {
+      showContentPost(d.post);
+      if (!forceNew) {
+        var today = new Date().toISOString().slice(0,10);
+        localStorage.setItem('hv-hub-post-'+hubState.platform+'-'+today, JSON.stringify({post:d.post,type:contentType}));
+      }
+    }
+  } catch(e) { toast('Netwerkfout','error'); }
+  if (btn) { btn.disabled=false; btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Genereer'; }
+}
+function copyContentPost() {
+  var out = document.getElementById('fdr-hub-output');
+  if (!out || !out.textContent) return;
+  navigator.clipboard.writeText(out.textContent).then(function() { toast('Gekopieerd! 🎉','success'); }).catch(function() { toast('Kopiëren mislukt','error'); });
+}
+
+// ── DM Generator ──────────────────────────────────────────────────────────
+function populateDmDropdown() {
+  var sel = document.getElementById('fdr-dm-prospect');
+  if (!sel) return;
+  var active = founderState.pipeline.filter(function(p) { return p.fase!=='Gewonnen'&&p.fase!=='Verloren'; });
+  var cur = sel.value;
+  sel.innerHTML = '<option value="">Kies een prospect...</option>' + active.map(function(p) {
+    return '<option value="'+escHtml(p.id)+'">'+escHtml((p.bedrijf||p.naam||'—')+' — '+p.fase)+'</option>';
+  }).join('');
+  if (cur) sel.value = cur;
+}
+async function generateDm() {
+  var sel = document.getElementById('fdr-dm-prospect');
+  var plt = document.getElementById('fdr-dm-platform');
+  var btn = document.getElementById('fdr-dm-btn');
+  var out = document.getElementById('fdr-dm-output');
+  var emp = document.getElementById('fdr-dm-empty');
+  var copy = document.getElementById('fdr-dm-copy');
+  var openLi = document.getElementById('fdr-dm-open-li');
+  if (!sel || !sel.value) { toast('Kies eerst een prospect','error'); return; }
+  var rec = founderState.pipeline.find(function(p) { return p.id===sel.value; });
+  if (!rec) return;
+  var platform = plt ? plt.value : 'linkedin';
+  if (btn) { btn.disabled=true; btn.innerHTML='Genereren...'; }
+  if (out) out.classList.remove('visible');
+  if (copy) copy.classList.remove('visible');
+  if (openLi) openLi.classList.remove('visible');
+  try {
+    var r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey()}, body: JSON.stringify({mode:'personalized-dm',bedrijf:rec.bedrijf||rec.naam,sector:rec.sector||'',fase:rec.fase,platform:platform,notities:rec.notities||'',dagen:cardAgeDays(rec.aangemaakt)}) });
+    var d = await r.json();
+    if (!r.ok) { toast(d.error||'Genereren mislukt','error'); }
+    else {
+      if (out) { out.textContent=d.message; out.classList.add('visible'); }
+      if (emp) emp.style.display='none';
+      if (copy) copy.classList.add('visible');
+      if (openLi) {
+        openLi.href = platform==='email' ? 'mailto:' : 'https://www.linkedin.com/messaging/';
+        openLi.textContent = platform==='email' ? 'Open E-mail' : 'Open LinkedIn';
+        openLi.classList.add('visible');
+      }
+    }
+  } catch(e) { toast('Netwerkfout','error'); }
+  if (btn) { btn.disabled=false; btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> Genereer'; }
+}
+function copyDm() {
+  var out = document.getElementById('fdr-dm-output');
+  if (!out||!out.textContent) return;
+  navigator.clipboard.writeText(out.textContent).then(function() { toast('Bericht gekopieerd! 🎉','success'); }).catch(function() { toast('Kopiëren mislukt','error'); });
+}
+
+// ── Outreach Tracker ──────────────────────────────────────────────────────
+var OUTREACH_TOTAL_TARGET = 43;
+function getOutreachKey() {
+  var d=new Date(); var jan1=new Date(d.getFullYear(),0,1);
+  var week=Math.ceil(((d-jan1)/86400000+jan1.getDay()+1)/7);
+  return 'hv-outreach-w'+d.getFullYear()+'-'+week;
+}
+function loadOutreachData() { try { return JSON.parse(localStorage.getItem(getOutreachKey())||'null')||{dms:0,emails:0,demos:0,follows:0}; } catch(e) { return {dms:0,emails:0,demos:0,follows:0}; } }
+function saveOutreachData(data) { try { localStorage.setItem(getOutreachKey(),JSON.stringify(data)); } catch(e) {} }
+function initOutreachTracker() {
+  var d=new Date(); var we=document.getElementById('fdr-outreach-week');
+  if (we) {
+    var mo=(d.getDay()+6)%7; var mon=new Date(d); mon.setDate(d.getDate()-mo);
+    var sun=new Date(mon); sun.setDate(mon.getDate()+6);
+    var fmt=function(dt){return dt.getDate()+'/'+(dt.getMonth()+1);};
+    we.textContent='Week van '+fmt(mon)+' → '+fmt(sun);
+  }
+  renderOutreach();
+}
+function renderOutreach() {
+  var data=loadOutreachData(); var total=data.dms+data.emails+data.demos+data.follows;
+  var pct=Math.min(100,Math.round((total/OUTREACH_TOTAL_TARGET)*100));
+  ['dms','emails','demos','follows'].forEach(function(k){var el=document.getElementById('or-'+k);if(el)el.textContent=data[k];});
+  var pe=document.getElementById('or-total-pct'); if(pe) pe.textContent='Totaal: '+total+' acties — '+pct+'% van weekdoel ('+OUTREACH_TOTAL_TARGET+')';
+  var bar=document.getElementById('or-bar'); if(bar) bar.style.width=pct+'%';
+}
+function logOutreach(type) {
+  var data=loadOutreachData(); data[type]=(data[type]||0)+1; saveOutreachData(data); renderOutreach();
+  toast('+1 '+{dms:'LinkedIn DM',emails:'Cold Email',demos:'Demo',follows:'Follow-up'}[type],'success');
+}
+function resetOutreach() { try{localStorage.removeItem(getOutreachKey());}catch(e){} renderOutreach(); toast('Week gereset','success'); }
+
+// ── Bouw Tracker ──────────────────────────────────────────────────────────
+var BOUW_DEFAULT=[{text:'Calendly integratie end-to-end testen',tag:'test',done:false},{text:'WhatsApp webhook response tijd checken',tag:'test',done:false},{text:'Onboarding flow testen als nieuwe klant',tag:'test',done:false},{text:'Vercel logs — errors controleren',tag:'fix',done:false},{text:'Airtable leads opruimen & archiveren',tag:'fix',done:false},{text:'Dashboard performance optimaliseren',tag:'feat',done:false},{text:'Nieuwe feature implementeren (sprint)',tag:'feat',done:false}];
+function loadBouwItems(){try{return JSON.parse(localStorage.getItem('hv-bouw-items')||'null')||JSON.parse(JSON.stringify(BOUW_DEFAULT));}catch(e){return JSON.parse(JSON.stringify(BOUW_DEFAULT));}}
+function saveBouwItems(items){try{localStorage.setItem('hv-bouw-items',JSON.stringify(items));}catch(e){}}
+function initBouwTracker(){renderBouwList();}
+function renderBouwList(){
+  var items=loadBouwItems(); var list=document.getElementById('fdr-bouw-list'); var prog=document.getElementById('fdr-bouw-progress');
+  if(!list)return;
+  var done=items.filter(function(i){return i.done;}).length;
+  if(prog)prog.textContent=done+'/'+items.length+' taken afgewerkt';
+  list.innerHTML=items.map(function(item,idx){
+    return '<div class="fdr-bouw-item'+(item.done?' done':'')+'" onclick="toggleBouwItem('+idx+')">'+
+      '<div class="fdr-bouw-cb">'+(item.done?'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>':'')+'</div>'+
+      '<span class="fdr-bouw-item-text">'+escHtml(item.text)+'</span>'+
+      '<span class="fdr-bouw-tag '+item.tag+'">'+item.tag+'</span></div>';
+  }).join('');
+}
+function toggleBouwItem(idx){var items=loadBouwItems();if(items[idx])items[idx].done=!items[idx].done;saveBouwItems(items);renderBouwList();}
+function addBouwItem(){var input=document.getElementById('fdr-bouw-input');if(!input||!input.value.trim())return;var items=loadBouwItems();items.push({text:input.value.trim(),tag:'feat',done:false});saveBouwItems(items);input.value='';renderBouwList();}
+
+// ── Docs Hub ──────────────────────────────────────────────────────────────
+var DOCS_KEY='hv-docs-config-v1';
+function loadDocsConfig(){try{return JSON.parse(localStorage.getItem(DOCS_KEY)||'{}');}catch(e){return {};}}
+function initDocsHub(){
+  var cfg=loadDocsConfig();
+  ['embed','pitch','contract','prijslijst','drive'].forEach(function(k){var el=document.getElementById('cfg-'+k);if(el&&cfg[k])el.value=cfg[k];});
+  renderDocsHub(cfg);
+}
+function renderDocsHub(cfg){
+  cfg=cfg||loadDocsConfig();
+  var wrap=document.getElementById('fdr-docs-embed-wrap'); var ph=document.getElementById('fdr-docs-embed-placeholder');
+  if(wrap&&cfg.embed){
+    if(ph)ph.style.display='none';
+    var ex=wrap.querySelector('iframe');
+    if(!ex){var iframe=document.createElement('iframe');iframe.src=cfg.embed;iframe.style.cssText='width:100%;height:480px;border:none;display:block;';iframe.allowFullscreen=true;wrap.appendChild(iframe);}
+    else ex.src=cfg.embed;
+  } else if(ph){ph.style.display='';var old=wrap?wrap.querySelector('iframe'):null;if(old)old.remove();}
+  var cardMap={pitch:'fdr-doc-pitch',contract:'fdr-doc-contract',prijslijst:'fdr-doc-prijslijst',drive:'fdr-doc-drive'};
+  Object.keys(cardMap).forEach(function(k){
+    var card=document.getElementById(cardMap[k]);if(!card)return;
+    if(cfg[k]){card.href=cfg[k];card.classList.remove('fdr-doc-card-nolink');}
+    else{card.removeAttribute('href');card.classList.add('fdr-doc-card-nolink');}
+  });
+}
+function toggleDocsConfig(){var p=document.getElementById('fdr-docs-cfg');if(p)p.classList.toggle('open');}
+function saveDocsConfig(){
+  var cfg={};
+  ['embed','pitch','contract','prijslijst','drive'].forEach(function(k){var el=document.getElementById('cfg-'+k);if(el&&el.value.trim())cfg[k]=el.value.trim();});
+  try{localStorage.setItem(DOCS_KEY,JSON.stringify(cfg));}catch(e){}
+  renderDocsHub(cfg);toggleDocsConfig();toast('Links opgeslagen','success');
+}
+
+// ── AI Coach Chat ─────────────────────────────────────────────────────────
+var chatHistory=[];
+function loadChatHistory(){
+  try{var raw=sessionStorage.getItem('hv-coach-chat');if(raw){chatHistory=JSON.parse(raw)||[];var el=document.getElementById('fdr-chat-msgs');if(el&&chatHistory.length){el.innerHTML='';chatHistory.forEach(function(m){appendChatBubble(m.role,m.content,false);});el.scrollTop=el.scrollHeight;}}}catch(e){}
+}
+function appendChatBubble(role,text,scroll){
+  var el=document.getElementById('fdr-chat-msgs');if(!el)return;
+  var div=document.createElement('div');div.className='fdr-chat-bubble '+role;div.textContent=text;
+  el.appendChild(div);if(scroll!==false)el.scrollTop=el.scrollHeight;return div;
+}
+function chatInputKeydown(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendCoachMessage();}}
+async function sendCoachMessage(){
+  var input=document.getElementById('fdr-chat-input'); var sendBtn=document.getElementById('fdr-chat-send');
+  if(!input)return; var text=input.value.trim(); if(!text)return; input.value='';
+  chatHistory.push({role:'user',content:text}); appendChatBubble('user',text);
+  var typing=appendChatBubble('assistant','Aan het denken...',true); if(typing)typing.classList.add('typing');
+  if(sendBtn)sendBtn.disabled=true;
+  try{
+    var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey()},body:JSON.stringify({mode:'ai-chat',messages:chatHistory.slice(-20)})});
+    var d=await r.json(); if(typing)typing.remove();
+    if(!r.ok){appendChatBubble('assistant','Fout: '+(d.error||'Onbekende fout'));}
+    else{chatHistory.push({role:'assistant',content:d.reply});appendChatBubble('assistant',d.reply);try{sessionStorage.setItem('hv-coach-chat',JSON.stringify(chatHistory.slice(-40)));}catch(e){}}
+  }catch(e){if(typing)typing.remove();appendChatBubble('assistant','Netwerkfout — probeer opnieuw.');}
+  if(sendBtn)sendBtn.disabled=false; input.focus();
+}
+function clearCoachChat(){chatHistory=[];sessionStorage.removeItem('hv-coach-chat');var el=document.getElementById('fdr-chat-msgs');if(el)el.innerHTML='<div class="fdr-chat-bubble assistant">Chat gewist. Hoe kan ik je helpen?</div>';}
+
+// Modal overlay close
+document.getElementById('pipe-modal-overlay').addEventListener('click',function(e){if(e.target===this)closePipeModal();});
+document.getElementById('goal-modal-overlay').addEventListener('click',function(e){if(e.target===this)closeGoalModal();});
+</script>
+</body>
+</html>
