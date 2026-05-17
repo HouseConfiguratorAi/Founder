@@ -762,16 +762,11 @@ var API = 'https://app.helvaro.pro/api/admin';
 function apiKey() { return localStorage.getItem('hv-founder-key') || ''; }
 
 // ── Gate ──────────────────────────────────────────────────────────────────
-async function gateLogin() {
+function gateLogin() {
   var k = document.getElementById('gate-key-input').value.trim();
   if (!k) return;
-  var r = await fetch(API, { headers: { 'x-api-key': k } });
-  if (r.ok) {
-    localStorage.setItem('hv-founder-key', k);
-    showApp();
-  } else {
-    document.getElementById('gate-err').style.display = 'block';
-  }
+  localStorage.setItem('hv-founder-key', k);
+  showApp();
 }
 function gateLogout() {
   localStorage.removeItem('hv-founder-key');
