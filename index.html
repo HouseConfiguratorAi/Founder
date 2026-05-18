@@ -1190,9 +1190,33 @@ function restoreTab() {
 }
 
 // ── Gate ──────────────────────────────────────────────────────────────────
-function gateLogin() {
-  var k = document.getElementById('gate-key-input').value.trim();
+async function gateLogin() {
+  var input = document.getElementById('gate-key-input');
+  var btn   = document.querySelector('.gate-btn');
+  var err   = document.getElementById('gate-err');
+  var k = input.value.trim();
   if (!k) return;
+  if (err) err.style.display = 'none';
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+  // Validate the key BEFORE saving — wrong keys would cause every later
+  // generation call to 401 with "Ongeldige admin key" and leave the user
+  // stuck in a broken-looking app.
+  try {
+    var r = await fetch(API, { headers: { 'x-api-key': k } });
+    if (r.status === 401) {
+      if (err) { err.textContent = 'Ongeldige sleutel'; err.style.display = 'block'; }
+      if (btn) { btn.disabled = false; btn.textContent = '→'; }
+      input.value = '';
+      input.focus();
+      return;
+    }
+    // Any non-401 (200 with data, or even a non-auth 5xx) is good enough —
+    // it confirms the key passed admin validation on the server.
+  } catch (e) {
+    // Network failure: don't block the user, just save and continue —
+    // the offline experience is still better than a stuck spinner.
+  }
+  if (btn) { btn.disabled = false; btn.textContent = '→'; }
   localStorage.setItem('hv-founder-key', k);
   enterApp();
 }
@@ -1210,9 +1234,21 @@ function enterApp() {
     setPersona(getPersona()); // re-runs the bootstrap with the saved persona
   }
 }
-(function() {
+(async function() {
   var k = apiKey();
-  if (k) enterApp();
+  if (!k) return;
+  // Validate the stored key before auto-entering — invalid keys would silently
+  // break every generation request later.
+  try {
+    var r = await fetch(API, { headers: { 'x-api-key': k } });
+    if (r.status === 401) {
+      localStorage.removeItem('hv-founder-key');
+      var err = document.getElementById('gate-err');
+      if (err) { err.textContent = 'Sleutel niet meer geldig — log opnieuw in'; err.style.display = 'block'; }
+      return; // gate stays visible
+    }
+  } catch (e) { /* offline — fall through and try entering anyway */ }
+  enterApp();
 })();
 
 // ── Theme ─────────────────────────────────────────────────────────────────
