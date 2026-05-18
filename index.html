@@ -141,6 +141,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .fdr-multi-goal-bump:hover{color:var(--text);border-color:#6366f1}
 .fdr-goal-deadline{font-size:11px;color:var(--text-s);text-align:center;padding-top:10px;border-top:1px solid var(--border);margin-top:12px}
 .fdr-goal-deadline strong{color:#818cf8}
+.fdr-milestone-banner{background:linear-gradient(90deg,rgba(99,102,241,.18),rgba(99,102,241,.05));border:1px solid rgba(99,102,241,.3);border-radius:8px;padding:9px 12px;font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.fdr-milestone-banner.done{background:linear-gradient(90deg,rgba(22,163,74,.18),rgba(22,163,74,.05));border-color:rgba(22,163,74,.4)}
+.fdr-milestone-banner.celebrate{background:linear-gradient(90deg,rgba(249,115,22,.18),rgba(245,158,11,.08));border-color:rgba(249,115,22,.4)}
+.fdr-milestone-emoji{font-size:16px;line-height:1}
 .fdr-goal-big{display:flex;align-items:baseline;gap:5px;margin-bottom:12px}
 .fdr-goal-current{font-size:44px;font-weight:900;color:var(--accent-b);line-height:1;letter-spacing:-1px}
 .fdr-goal-sep{font-size:24px;color:var(--text-m)}
@@ -652,7 +656,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
             <div class="mrr-hero-label">MRR — Maandinkomen</div>
             <div class="mrr-val-big" id="fdr-mrr-val">€0</div>
             <div class="mrr-sub-txt" id="fdr-mrr-sub">0 betalende klanten</div>
-            <div class="mrr-target-txt">→ <span id="fdr-mrr-target">Doel: €10.000/mnd bij 10 klanten · 20 jun 2026</span></div>
+            <div class="mrr-target-txt">→ <span id="fdr-mrr-target">Eerst 1 klant · dan €10.000/mnd bij 10 klanten · 31 dec 2026</span></div>
           </div>
         </div>
         <div class="mrr-chart-wrap">
@@ -778,7 +782,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
       <!-- Goals: 3 stacked mini-goals -->
       <div class="fdr-panel fdr-goal-panel">
-        <div class="fdr-goal-hdr"><span>🎯 Doelen voor 20 jun 2026</span><button class="fdr-refresh-btn" onclick="loadFounderData(true)">↻</button></div>
+        <div class="fdr-goal-hdr"><span>🎯 Doelen voor 31 dec 2026</span><button class="fdr-refresh-btn" onclick="loadFounderData(true)">↻</button></div>
+
+        <!-- Milestone banner: 1ste klant focus, dan doorgroeien naar 10 -->
+        <div class="fdr-milestone-banner" id="mg-milestone">
+          <span class="fdr-milestone-emoji" id="mg-milestone-emoji">🎯</span>
+          <span id="mg-milestone-text">Eerste prioriteit: 1ste betalende klant</span>
+        </div>
 
         <div class="fdr-multi-goal-row">
           <div class="fdr-multi-goal-icon" style="background:rgba(99,102,241,.15)">👥</div>
@@ -1540,13 +1550,14 @@ function updateMrrWidget() {
   set('fdr-profit-marge', 'Marge: '+(mrr>0?marge+'%':'—%')+' • variabel €'+varPerClient+'/klant');
 }
 
-// Three stacked goals for 20 jun 2026:
+// Three stacked goals for 31 dec 2026 (with a sub-milestone at 1 klant):
+//   Milestone:  1ste betalende klant — immediate priority, big banner.
 //   1. 10 paying customers   (from per-client MRR map: count of entries > 0)
 //   2. €10.000 MRR             (sum of per-client MRR map)
 //   3. 2 case studies/testimonials  (manually tracked in localStorage)
 var GOAL_TARGETS = { klanten: 10, mrr: 10000, cases: 2 };
 var CASES_KEY = 'hv-cases-count-v1';
-var DEADLINE_ISO = '2026-06-20';
+var DEADLINE_ISO = '2026-12-31';
 
 function bumpCases(delta) {
   var n = Math.max(0, (getCasesCount() || 0) + (delta|0));
@@ -1579,6 +1590,29 @@ function updateGoalPanel() {
   setRow('klanten', payingCount, GOAL_TARGETS.klanten);
   setRow('mrr',     mrrTotal,    GOAL_TARGETS.mrr, function(v) { return '€'+Math.round(v).toLocaleString('nl-BE'); });
   setRow('cases',   caseCount,   GOAL_TARGETS.cases);
+
+  // Milestone banner: 0 → focus on first client, 1-9 → keep growing,
+  // 10+ → goal reached. Uses subtle color cues + emoji change so the
+  // founder always knows which mode they're in at a glance.
+  var bnr   = document.getElementById('mg-milestone');
+  var em    = document.getElementById('mg-milestone-emoji');
+  var txt   = document.getElementById('mg-milestone-text');
+  if (bnr && em && txt) {
+    bnr.classList.remove('done', 'celebrate');
+    if (payingCount === 0) {
+      em.textContent = '🎯';
+      txt.textContent = 'Eerste prioriteit: 1ste betalende klant';
+    } else if (payingCount < GOAL_TARGETS.klanten) {
+      bnr.classList.add('done');
+      em.textContent = '✓';
+      var remaining = GOAL_TARGETS.klanten - payingCount;
+      txt.textContent = 'Eerste klant binnen! Nog ' + remaining + ' tot ' + GOAL_TARGETS.klanten + '.';
+    } else {
+      bnr.classList.add('celebrate');
+      em.textContent = '🎉';
+      txt.textContent = 'Doel bereikt — ' + GOAL_TARGETS.klanten + ' klanten gehaald!';
+    }
+  }
 
   var dl = document.getElementById('mg-days-left');
   if (dl) {
