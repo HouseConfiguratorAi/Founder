@@ -124,6 +124,23 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 /* ── Goal panel ─────────────────────────────── */
 .fdr-goal-panel{padding:18px 20px}
 .fdr-goal-hdr{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600;color:var(--text-s);margin-bottom:14px}
+.fdr-multi-goal-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.fdr-multi-goal-row:last-child{margin-bottom:0}
+.fdr-multi-goal-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.fdr-multi-goal-body{flex:1;min-width:0}
+.fdr-multi-goal-top{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;margin-bottom:5px}
+.fdr-multi-goal-label{color:var(--text-s);font-weight:600}
+.fdr-multi-goal-val{font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;font-size:13px}
+.fdr-multi-goal-val .target{color:var(--text-s);font-weight:500;margin-left:2px}
+.fdr-multi-goal-bar{height:5px;background:rgba(99,102,241,.1);border-radius:99px;overflow:hidden}
+.fdr-multi-goal-fill{height:100%;border-radius:99px;transition:width .4s ease}
+.fdr-multi-goal-fill.klanten{background:linear-gradient(90deg,#6366f1,#818cf8)}
+.fdr-multi-goal-fill.mrr{background:linear-gradient(90deg,#16a34a,#4ade80)}
+.fdr-multi-goal-fill.cases{background:linear-gradient(90deg,#f97316,#fb923c)}
+.fdr-multi-goal-bump{background:none;border:1px solid var(--border);color:var(--text-s);width:22px;height:22px;border-radius:5px;font-size:13px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin-left:6px}
+.fdr-multi-goal-bump:hover{color:var(--text);border-color:#6366f1}
+.fdr-goal-deadline{font-size:11px;color:var(--text-s);text-align:center;padding-top:10px;border-top:1px solid var(--border);margin-top:12px}
+.fdr-goal-deadline strong{color:#818cf8}
 .fdr-goal-big{display:flex;align-items:baseline;gap:5px;margin-bottom:12px}
 .fdr-goal-current{font-size:44px;font-weight:900;color:var(--accent-b);line-height:1;letter-spacing:-1px}
 .fdr-goal-sep{font-size:24px;color:var(--text-m)}
@@ -635,7 +652,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
             <div class="mrr-hero-label">MRR — Maandinkomen</div>
             <div class="mrr-val-big" id="fdr-mrr-val">€0</div>
             <div class="mrr-sub-txt" id="fdr-mrr-sub">0 betalende klanten</div>
-            <div class="mrr-target-txt">→ <span id="fdr-mrr-target">Doel: €1.245/mnd bij 5 klanten</span></div>
+            <div class="mrr-target-txt">→ <span id="fdr-mrr-target">Doel: €10.000/mnd bij 10 klanten · 20 jun 2026</span></div>
           </div>
         </div>
         <div class="mrr-chart-wrap">
@@ -759,17 +776,47 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="fdr-stat"><div class="fdr-stat-val" id="f-stat-new" style="color:var(--red)">—</div><div class="fdr-stat-lbl">Ongelezen</div></div>
       </div>
 
-      <!-- Goal progress -->
+      <!-- Goals: 3 stacked mini-goals -->
       <div class="fdr-panel fdr-goal-panel">
-        <div class="fdr-goal-hdr"><span>🎯 Doel — 5 klanten voor 20 jun</span><button class="fdr-refresh-btn" onclick="loadFounderData(true)">↻</button></div>
-        <div class="fdr-goal-big">
-          <span class="fdr-goal-current" id="fdr-goal-current">0</span>
-          <span class="fdr-goal-sep">/</span>
-          <span class="fdr-goal-target">5</span>
-          <span class="fdr-goal-unit">klanten</span>
+        <div class="fdr-goal-hdr"><span>🎯 Doelen voor 20 jun 2026</span><button class="fdr-refresh-btn" onclick="loadFounderData(true)">↻</button></div>
+
+        <div class="fdr-multi-goal-row">
+          <div class="fdr-multi-goal-icon" style="background:rgba(99,102,241,.15)">👥</div>
+          <div class="fdr-multi-goal-body">
+            <div class="fdr-multi-goal-top">
+              <span class="fdr-multi-goal-label">Betalende klanten</span>
+              <span class="fdr-multi-goal-val"><span id="mg-klanten-cur">0</span><span class="target">/10</span></span>
+            </div>
+            <div class="fdr-multi-goal-bar"><div class="fdr-multi-goal-fill klanten" id="mg-klanten-bar" style="width:0%"></div></div>
+          </div>
         </div>
-        <div class="fdr-goal-bar-wrap"><div class="fdr-goal-bar-fill" id="fdr-goal-bar" style="width:0%"></div></div>
-        <div class="fdr-goal-pct" id="fdr-goal-pct">0% bereikt</div>
+
+        <div class="fdr-multi-goal-row">
+          <div class="fdr-multi-goal-icon" style="background:rgba(22,163,74,.15)">💰</div>
+          <div class="fdr-multi-goal-body">
+            <div class="fdr-multi-goal-top">
+              <span class="fdr-multi-goal-label">MRR per maand</span>
+              <span class="fdr-multi-goal-val"><span id="mg-mrr-cur">€0</span><span class="target">/€10.000</span></span>
+            </div>
+            <div class="fdr-multi-goal-bar"><div class="fdr-multi-goal-fill mrr" id="mg-mrr-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <div class="fdr-multi-goal-row">
+          <div class="fdr-multi-goal-icon" style="background:rgba(249,115,22,.15)">⭐</div>
+          <div class="fdr-multi-goal-body">
+            <div class="fdr-multi-goal-top">
+              <span class="fdr-multi-goal-label">Case studies / testimonials</span>
+              <span class="fdr-multi-goal-val">
+                <span id="mg-cases-cur">0</span><span class="target">/2</span>
+                <button class="fdr-multi-goal-bump" onclick="bumpCases(1)" title="Eentje erbij">+</button><button class="fdr-multi-goal-bump" onclick="bumpCases(-1)" title="Eentje af">−</button>
+              </span>
+            </div>
+            <div class="fdr-multi-goal-bar"><div class="fdr-multi-goal-fill cases" id="mg-cases-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <div class="fdr-goal-deadline">Nog <strong id="mg-days-left">—</strong> dagen tot deadline</div>
       </div>
 
       <!-- Pipeline sidebar -->
@@ -1493,15 +1540,51 @@ function updateMrrWidget() {
   set('fdr-profit-marge', 'Marge: '+(mrr>0?marge+'%':'—%')+' • variabel €'+varPerClient+'/klant');
 }
 
+// Three stacked goals for 20 jun 2026:
+//   1. 10 paying customers   (from per-client MRR map: count of entries > 0)
+//   2. €10.000 MRR             (sum of per-client MRR map)
+//   3. 2 case studies/testimonials  (manually tracked in localStorage)
+var GOAL_TARGETS = { klanten: 10, mrr: 10000, cases: 2 };
+var CASES_KEY = 'hv-cases-count-v1';
+var DEADLINE_ISO = '2026-06-20';
+
+function bumpCases(delta) {
+  var n = Math.max(0, (getCasesCount() || 0) + (delta|0));
+  try { localStorage.setItem(CASES_KEY, String(n)); } catch(e) {}
+  updateGoalPanel();
+}
+function getCasesCount() {
+  try { return parseInt(localStorage.getItem(CASES_KEY)||'0', 10) || 0; } catch(e) { return 0; }
+}
+
 function updateGoalPanel() {
-  var current = founderState.clients; var target = 5;
-  var pct = Math.min(100, Math.round(current/target*100));
-  var gc = document.getElementById('fdr-goal-current');
-  var gb = document.getElementById('fdr-goal-bar');
-  var gp = document.getElementById('fdr-goal-pct');
-  if (gc) gc.textContent = current;
-  if (gb) gb.style.width = pct + '%';
-  if (gp) gp.textContent = pct + '% bereikt';
+  // Klanten: count of clients in the per-client MRR map that have a value > 0.
+  // Falls back to founderState.clients if MRR isn't entered yet (so the panel
+  // isn't totally empty for new accounts).
+  var mrrMap = (typeof loadMrrMap === 'function') ? loadMrrMap() : {};
+  var payingCount = 0, mrrTotal = 0;
+  Object.keys(mrrMap).forEach(function(k) {
+    if (mrrMap[k] > 0) { payingCount++; mrrTotal += mrrMap[k]; }
+  });
+  if (!payingCount) payingCount = founderState.clients || 0;
+  var caseCount = getCasesCount();
+
+  function setRow(prefix, current, target, fmt) {
+    var pct = target > 0 ? Math.min(100, Math.round(current/target*100)) : 0;
+    var c = document.getElementById('mg-'+prefix+'-cur');
+    var b = document.getElementById('mg-'+prefix+'-bar');
+    if (c) c.textContent = fmt ? fmt(current) : current;
+    if (b) b.style.width = pct + '%';
+  }
+  setRow('klanten', payingCount, GOAL_TARGETS.klanten);
+  setRow('mrr',     mrrTotal,    GOAL_TARGETS.mrr, function(v) { return '€'+Math.round(v).toLocaleString('nl-BE'); });
+  setRow('cases',   caseCount,   GOAL_TARGETS.cases);
+
+  var dl = document.getElementById('mg-days-left');
+  if (dl) {
+    var diff = Math.ceil((new Date(DEADLINE_ISO) - Date.now()) / 86400000);
+    dl.textContent = diff > 0 ? diff : 0;
+  }
 }
 
 // ── Pipeline Modal ────────────────────────────────────────────────────────
@@ -1961,6 +2044,9 @@ function renderMrrTotals(){
   if (v) v.textContent = fmtEuro(total);
   if (s) s.textContent = count + ' betalende ' + (count===1?'klant':'klanten');
   renderProfit(total);
+  // Goal panel reads the same MRR map — refresh it so customer count
+  // and MRR progress stay in sync with what you typed.
+  if (typeof updateGoalPanel === 'function') updateGoalPanel();
 }
 function renderProfit(mrr){
   var costs = loadCosts();
