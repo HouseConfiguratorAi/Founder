@@ -1638,7 +1638,7 @@ async function getFounderAdvice() {
 
 // ── Content Hub ───────────────────────────────────────────────────────────
 var hubState = { platform: 'linkedin' };
-var HUB_DAY_LABELS = {1:'Maandag — Marketingbureaus',2:'Dinsdag — Vastgoed',3:'Woensdag — Coaches',4:'Donderdag — KMO\'s',5:'Vrijdag — Leadgeneratie',0:'Weekend',6:'Weekend'};
+var HUB_DAY_LABELS = {1:'Maandag · Verzekeringen',2:'Dinsdag · Vastgoed',3:'Woensdag · Recruitment',4:'Donderdag · B2B SaaS',5:'Vrijdag · Coaching',6:'Zaterdag · Automotive',0:'Zondag · Leadgeneratie'};
 function initLinkedInSection() {
   var sub = document.getElementById('fdr-hub-sub');
   if (sub) sub.textContent = HUB_DAY_LABELS[new Date().getDay()] || 'LinkedIn & Instagram';
