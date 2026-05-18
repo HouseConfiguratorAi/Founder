@@ -536,6 +536,19 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .fdr-cost-edit-btn:hover{color:#818cf8}
 .fdr-cost-input{width:60px;padding:2px 6px;background:var(--bg-primary);border:1px solid var(--border);border-radius:5px;color:var(--text-primary);font-size:12px;text-align:right;font-variant-numeric:tabular-nums;font-family:inherit}
 .fdr-task-not-mine{opacity:.4}
+
+/* ── Tab navigation ─────────────────────────────────────────────────────── */
+.fdr-tabs{display:flex;gap:2px;padding:8px 24px;background:var(--bg-card);border-bottom:1px solid var(--border);position:sticky;top:54px;z-index:90;overflow-x:auto;scrollbar-width:none}
+.fdr-tabs::-webkit-scrollbar{display:none}
+.fdr-tab{background:none;border:none;padding:9px 14px;color:var(--text-m);font-size:13px;font-weight:600;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all .15s ease;font-family:inherit}
+.fdr-tab:hover{background:rgba(99,102,241,.08);color:var(--text-p)}
+.fdr-tab.active{background:rgba(99,102,241,.18);color:#818cf8}
+.fdr-tab-icon{font-size:14px;line-height:1}
+.fdr-tab-badge{margin-left:4px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:99px;min-width:16px;text-align:center}
+.fdr-page{display:none;animation:fdrPageIn .2s ease}
+.fdr-page.active{display:block}
+@keyframes fdrPageIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:680px){.fdr-tabs{padding:6px 12px}.fdr-tab{padding:8px 10px;font-size:12px}.fdr-tab-icon{display:none}}
 </style>
 </head>
 <body>
@@ -587,7 +600,22 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <!-- Main App -->
 <div id="app">
+
+<!-- Tabs -->
+<nav class="fdr-tabs" id="fdr-tabs">
+  <button class="fdr-tab" data-tab="overzicht" onclick="navigateTo('overzicht')"><span class="fdr-tab-icon">📊</span> Overzicht</button>
+  <button class="fdr-tab" data-tab="pipeline"  onclick="navigateTo('pipeline')"><span class="fdr-tab-icon">🎯</span> Pipeline</button>
+  <button class="fdr-tab" data-tab="content"   onclick="navigateTo('content')"><span class="fdr-tab-icon">✍️</span> Content</button>
+  <button class="fdr-tab" data-tab="outreach"  onclick="navigateTo('outreach')"><span class="fdr-tab-icon">💬</span> Outreach</button>
+  <button class="fdr-tab" data-tab="bouw"      onclick="navigateTo('bouw')"><span class="fdr-tab-icon">🛠️</span> Bouw</button>
+  <button class="fdr-tab" data-tab="docs"      onclick="navigateTo('docs')"><span class="fdr-tab-icon">📁</span> Docs</button>
+  <button class="fdr-tab" data-tab="coach"     onclick="navigateTo('coach')"><span class="fdr-tab-icon">🧠</span> Coach</button>
+</nav>
+
 <div class="fdr-wrap">
+
+  <!-- ═══ OVERZICHT ═══ -->
+  <div class="fdr-page" data-page="overzicht">
 
   <!-- ═══ Dashboard Grid ═══ -->
   <div class="fdr-dash-grid">
@@ -829,6 +857,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="fdr-followup-wrap" id="fdr-followup-list"></div>
   </div>
 
+  </div><!-- /page overzicht -->
+
+  <!-- ═══ PIPELINE ═══ -->
+  <div class="fdr-page" data-page="pipeline">
+
   <!-- Pipeline kanban (full width) -->
   <div id="fdr-pipeline-section">
     <div class="fdr-section-hdr"><h3>Sales Pipeline</h3></div>
@@ -870,8 +903,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </button>
   </div>
 
-  <!-- AI Tools Row: Content Hub + DM Generator -->
-  <div class="fdr-ai-tools-row">
+  </div><!-- /page pipeline -->
+
+  <!-- ═══ CONTENT ═══ -->
+  <div class="fdr-page" data-page="content">
+
   <div class="fdr-hub-box">
     <div class="fdr-hub-hdr">
       <div class="fdr-hub-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
@@ -935,6 +971,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
   </div>
 
+  </div><!-- /page content -->
+
+  <!-- ═══ OUTREACH ═══ -->
+  <div class="fdr-page" data-page="outreach">
+
   <!-- DM Generator -->
   <div class="fdr-dm-box">
     <div class="fdr-dm-hdr">
@@ -965,10 +1006,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       </a>
     </div>
   </div>
-  </div><!-- /fdr-ai-tools-row -->
 
-  <!-- Lower Row: Bouw + Docs -->
-  <div class="fdr-lower-row">
+  </div><!-- /page outreach -->
+
+  <!-- ═══ BOUW ═══ -->
+  <div class="fdr-page" data-page="bouw">
+
   <!-- Bouw Tracker -->
   <div class="fdr-bouw-box">
     <div class="fdr-bouw-hdr">
@@ -984,6 +1027,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       </div>
     </div>
   </div>
+
+  </div><!-- /page bouw -->
+
+  <!-- ═══ DOCS ═══ -->
+  <div class="fdr-page" data-page="docs">
 
   <!-- Documenten Hub -->
   <div class="fdr-docs-box">
@@ -1017,7 +1065,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="fdr-docs-cfg-row" style="justify-content:flex-end"><button class="fdr-docs-cfg-save" onclick="saveDocsConfig()">Opslaan</button></div>
     </div>
   </div>
-  </div><!-- /fdr-lower-row -->
+  </div><!-- /page docs -->
+
+  <!-- ═══ COACH ═══ -->
+  <div class="fdr-page" data-page="coach">
 
   <!-- AI Coach Chat -->
   <div class="fdr-chat-box">
@@ -1036,6 +1087,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       </button>
     </div>
   </div>
+
+  </div><!-- /page coach -->
 
 </div><!-- /fdr-wrap -->
 </div><!-- /app -->
@@ -1093,6 +1146,7 @@ function setPersona(name) {
     document.getElementById('topbar').style.display = 'flex';
     document.getElementById('app').style.display = 'block';
     initTheme();
+    restoreTab();
     loadFounderData();
     startPresencePing();
   }
@@ -1109,6 +1163,30 @@ function updatePersonaGreeting() {
   if (!el) return;
   var p = getPersona();
   el.innerHTML = p ? 'Welkom <strong>'+escHtml(p)+'</strong> <button class="persona-switch" onclick="clearPersona()">wissel</button>' : '';
+}
+
+// ── Tab navigation ────────────────────────────────────────────────────────
+var TAB_KEY = 'hv-founder-tab';
+function navigateTo(page) {
+  if (!page) page = 'overzicht';
+  document.querySelectorAll('.fdr-page').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.fdr-tab').forEach(function(el) { el.classList.remove('active'); });
+  var pageEl = document.querySelector('.fdr-page[data-page="' + page + '"]');
+  var tabEl  = document.querySelector('.fdr-tab[data-tab="' + page + '"]');
+  if (pageEl) pageEl.classList.add('active');
+  if (tabEl)  tabEl.classList.add('active');
+  try { localStorage.setItem(TAB_KEY, page); } catch(e) {}
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+function restoreTab() {
+  var saved = '';
+  try { saved = localStorage.getItem(TAB_KEY) || ''; } catch(e) {}
+  // Persona-aware default landing: Frade → outreach (sales), Teljo → bouw (tech), else overview
+  if (!saved) {
+    var p = getPersona();
+    saved = p === 'Frade' ? 'outreach' : p === 'Teljo' ? 'bouw' : 'overzicht';
+  }
+  navigateTo(saved);
 }
 
 // ── Gate ──────────────────────────────────────────────────────────────────
