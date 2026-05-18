@@ -389,6 +389,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg-primary);color:var(--tex
 
 @media(max-width:960px){.fdr-main-grid{grid-template-columns:1fr}.fdr-right-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}.founder-pipeline-cols{grid-template-columns:1fr}}
 @media(max-width:600px){.fdr-hero{flex-direction:column;gap:16px}.fdr-hero-right{text-align:left}.fdr-right-col{grid-template-columns:1fr}.fdr-outreach-grid{grid-template-columns:1fr}}
+
+/* New layout grids */
+.fdr-ai-tools-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.fdr-lower-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+@media(max-width:768px){.fdr-ai-tools-row,.fdr-lower-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -539,7 +544,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg-primary);color:var(--tex
     </button>
   </div>
 
-  <!-- Content Hub -->
+  <!-- AI Tools Row: Content Hub + DM Generator -->
+  <div class="fdr-ai-tools-row">
   <div class="fdr-hub-box">
     <div class="fdr-hub-hdr">
       <div class="fdr-hub-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
@@ -634,24 +640,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg-primary);color:var(--tex
     </div>
   </div>
 
-  <!-- Outreach Tracker -->
-  <div class="fdr-outreach-box">
-    <div class="fdr-outreach-hdr">
-      <div><div class="fdr-outreach-title">📣 Outreach Teller — Teljo</div><div class="fdr-outreach-week" id="fdr-outreach-week">Week van —</div></div>
-      <button class="fdr-outreach-reset" onclick="resetOutreach()">Week resetten</button>
-    </div>
-    <div class="fdr-outreach-body">
-      <div class="fdr-outreach-grid">
-        <div class="fdr-outreach-card"><div class="fdr-outreach-num" id="or-dms" style="color:#4f46e5">0</div><div class="fdr-outreach-info"><div class="fdr-outreach-name">LinkedIn DMs</div><div class="fdr-outreach-target">Doel: 20/week</div></div><button class="fdr-outreach-plus" onclick="logOutreach('dms')">+</button></div>
-        <div class="fdr-outreach-card"><div class="fdr-outreach-num" id="or-emails" style="color:#0a66c2">0</div><div class="fdr-outreach-info"><div class="fdr-outreach-name">Cold Emails</div><div class="fdr-outreach-target">Doel: 10/week</div></div><button class="fdr-outreach-plus" onclick="logOutreach('emails')">+</button></div>
-        <div class="fdr-outreach-card"><div class="fdr-outreach-num" id="or-demos" style="color:#22c55e">0</div><div class="fdr-outreach-info"><div class="fdr-outreach-name">Demo's gehad</div><div class="fdr-outreach-target">Doel: 3/week</div></div><button class="fdr-outreach-plus" onclick="logOutreach('demos')">+</button></div>
-        <div class="fdr-outreach-card"><div class="fdr-outreach-num" id="or-follows" style="color:#f97316">0</div><div class="fdr-outreach-info"><div class="fdr-outreach-name">Follow-ups</div><div class="fdr-outreach-target">Doel: 10/week</div></div><button class="fdr-outreach-plus" onclick="logOutreach('follows')">+</button></div>
-      </div>
-      <div class="fdr-outreach-footer"><span class="fdr-outreach-pct" id="or-total-pct">Totaal: 0 acties</span></div>
-      <div class="fdr-outreach-bar-wrap" style="margin-top:10px"><div class="fdr-outreach-bar-fill" id="or-bar" style="width:0%"></div></div>
-    </div>
-  </div>
+  </div><!-- /fdr-ai-tools-row -->
 
+  <!-- Lower Row: Bouw + Docs -->
+  <div class="fdr-lower-row">
   <!-- Bouw Tracker -->
   <div class="fdr-bouw-box">
     <div class="fdr-bouw-hdr">
@@ -700,6 +692,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg-primary);color:var(--tex
       <div class="fdr-docs-cfg-row" style="justify-content:flex-end"><button class="fdr-docs-cfg-save" onclick="saveDocsConfig()">Opslaan</button></div>
     </div>
   </div>
+  </div><!-- /fdr-lower-row -->
 
   <!-- AI Coach Chat -->
   <div class="fdr-chat-box">

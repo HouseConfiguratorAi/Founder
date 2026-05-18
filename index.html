@@ -409,6 +409,66 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 @media(max-width:960px){.fdr-main-grid{grid-template-columns:1fr}.fdr-right-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}.founder-pipeline-cols{grid-template-columns:1fr}}
 @media(max-width:600px){.fdr-hero{flex-direction:column;gap:20px}.fdr-hero-right{text-align:left}.fdr-right-col{grid-template-columns:1fr}.fdr-outreach-grid{grid-template-columns:1fr}.fdr-wrap{padding:0 16px}}
+
+/* ── New dashboard layout ─────────────────────── */
+.fdr-dash-grid{display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start}
+.fdr-main-col{display:flex;flex-direction:column;gap:20px}
+.fdr-sidebar-col{display:flex;flex-direction:column;gap:16px}
+
+/* MRR Hero Card */
+.fdr-mrr-hero{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:border-color .2s}
+.fdr-mrr-hero:hover{border-color:var(--border-b)}
+.mrr-hero-top{display:flex;justify-content:space-between;align-items:flex-start;padding:28px 32px 12px;gap:20px}
+.mrr-hero-greeting{}
+.mrr-greeting-date{font-size:12px;font-weight:600;color:var(--text-m);margin-bottom:4px;letter-spacing:.2px}
+.mrr-greeting-day{font-size:28px;font-weight:900;color:var(--text);letter-spacing:-.6px;line-height:1.1}
+.mrr-greeting-deadline{font-size:12px;color:var(--accent-b);margin-top:8px;font-weight:700}
+.mrr-hero-mrr{text-align:right}
+.mrr-hero-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-m);margin-bottom:6px}
+.mrr-val-big{font-size:52px;font-weight:900;color:var(--green);line-height:1;letter-spacing:-2px}
+.mrr-sub-txt{font-size:12px;color:var(--text-m);margin-top:5px}
+.mrr-target-txt{font-size:11px;color:var(--text-s);margin-top:6px}
+.mrr-chart-wrap{padding:4px 28px 4px}
+.mrr-chart-svg{width:100%;height:110px;display:block;overflow:visible}
+.mrr-hero-footer{display:flex;border-top:1px solid var(--border);background:var(--bg-alt)}
+.mrr-footer-col{flex:1;padding:16px 8px;text-align:center;border-right:1px solid var(--border)}
+.mrr-footer-col:last-child{border-right:none}
+.mrr-footer-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text-m);margin-bottom:5px}
+.mrr-footer-val{font-size:16px;font-weight:800;color:var(--text)}
+.mrr-footer-val.neg{color:var(--red)}
+.mrr-footer-val.pos{color:var(--green)}
+
+/* Sidebar pipeline */
+.fdr-sidebar-pipe{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s}
+.fdr-sidebar-pipe:hover{border-color:var(--border-b)}
+.fdr-sidebar-pipe-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.fdr-sidebar-pipe-title{font-size:14px;font-weight:700}
+.fdr-sidebar-see-all{font-size:12px;color:var(--accent-b);cursor:pointer;font-weight:600;background:none;border:none;font-family:inherit;padding:0}
+.fdr-sidebar-see-all:hover{text-decoration:underline}
+.fdr-sidebar-pipe-body{padding:16px 20px}
+
+/* Outreach metrics widget (Proposal Progress style) */
+.fdr-outreach-widget{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s}
+.fdr-outreach-widget:hover{border-color:var(--border-b)}
+.fdr-outreach-widget-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.fdr-outreach-widget-title{font-size:14px;font-weight:700}
+.fdr-outreach-metrics{display:grid;grid-template-columns:repeat(4,1fr)}
+.fdr-outreach-metric{padding:16px 12px;border-right:1px solid var(--border);display:flex;flex-direction:column}
+.fdr-outreach-metric:last-child{border-right:none}
+.fdr-outreach-metric-num{font-size:26px;font-weight:900;line-height:1;margin-bottom:4px;letter-spacing:-.5px}
+.fdr-outreach-metric-lbl{font-size:10px;color:var(--text-s);font-weight:600;margin-bottom:10px;line-height:1.4}
+.fdr-outreach-metric-bars{display:flex;gap:3px;align-items:flex-end;height:34px;margin-bottom:10px}
+.fdr-outreach-metric-bar-w{flex:1;background:var(--bg-alt);border-radius:3px;overflow:hidden;height:100%;display:flex;align-items:flex-end}
+.fdr-outreach-metric-bar-f{width:100%;border-radius:3px}
+.fdr-outreach-plus{width:100%;padding:5px 0;background:none;border:1px solid var(--border-b);border-radius:6px;color:var(--text-s);font-size:14px;cursor:pointer;font-family:inherit;transition:var(--tr)}
+.fdr-outreach-plus:hover{background:var(--accent-dim);color:var(--accent-b);border-color:var(--accent)}
+
+/* Side-by-side tool rows */
+.fdr-ai-tools-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.fdr-lower-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+
+@media(max-width:1040px){.fdr-dash-grid{grid-template-columns:1fr}.fdr-outreach-metrics{grid-template-columns:repeat(2,1fr)}.fdr-outreach-metric:nth-child(2){border-right:none}.fdr-outreach-metric:nth-child(3){border-top:1px solid var(--border)}.fdr-outreach-metric:nth-child(4){border-top:1px solid var(--border);border-right:none}}
+@media(max-width:680px){.mrr-hero-top{flex-direction:column}.mrr-hero-mrr{text-align:left}.mrr-val-big{font-size:38px}.fdr-ai-tools-row,.fdr-lower-row{grid-template-columns:1fr}.fdr-outreach-metrics{grid-template-columns:repeat(2,1fr)}.founder-pipeline-cols{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -441,39 +501,100 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <div id="app">
 <div class="fdr-wrap">
 
-  <!-- Hero -->
-  <div class="fdr-hero">
-    <div class="fdr-hero-left">
-      <div class="fdr-day" id="fdr-dayname">—</div>
-      <div class="fdr-date" id="fdr-date">—</div>
-      <div class="fdr-subtitle">Helvaro — Roadmap naar 5 klanten</div>
-    </div>
-    <div class="fdr-hero-right">
-      <div class="fdr-deadline-label">Deadline</div>
-      <div class="fdr-deadline-val">20 jun 2026</div>
-      <div class="fdr-deadline-days" id="fdr-days-left">— dagen</div>
-    </div>
-  </div>
+  <!-- ═══ Dashboard Grid ═══ -->
+  <div class="fdr-dash-grid">
 
-  <!-- Main grid -->
-  <div class="fdr-main-grid">
-    <!-- Checklist -->
-    <div class="fdr-panel">
-      <div class="fdr-panel-hdr">
-        <span class="fdr-panel-title">Checklist van Vandaag</span>
-        <span class="fdr-task-progress" id="fdr-task-progress">0 / 0 voltooid</span>
+    <!-- LEFT: Main column -->
+    <div class="fdr-main-col">
+
+      <!-- MRR Hero Card -->
+      <div class="fdr-mrr-hero">
+        <div class="mrr-hero-top">
+          <div class="mrr-hero-greeting">
+            <div class="mrr-greeting-date" id="fdr-date">—</div>
+            <div class="mrr-greeting-day" id="fdr-dayname">—</div>
+            <div class="mrr-greeting-deadline" id="fdr-days-left">— dagen tot deadline</div>
+          </div>
+          <div class="mrr-hero-mrr">
+            <div class="mrr-hero-label">MRR — Maandinkomen</div>
+            <div class="mrr-val-big" id="fdr-mrr-val">€0</div>
+            <div class="mrr-sub-txt" id="fdr-mrr-sub">0 betalende klanten</div>
+            <div class="mrr-target-txt">→ <span id="fdr-mrr-target">Doel: €1.245/mnd bij 5 klanten</span></div>
+          </div>
+        </div>
+        <div class="mrr-chart-wrap">
+          <svg class="mrr-chart-svg" viewBox="0 0 700 110" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="barG" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#6366f1" stop-opacity=".85"/>
+                <stop offset="100%" stop-color="#6366f1" stop-opacity=".06"/>
+              </linearGradient>
+              <linearGradient id="barGt" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#818cf8" stop-opacity="1"/>
+                <stop offset="100%" stop-color="#6366f1" stop-opacity=".18"/>
+              </linearGradient>
+            </defs>
+            <rect x="8"   y="68" width="76" height="32" rx="6" fill="url(#barG)"/>
+            <rect x="108" y="44" width="76" height="56" rx="6" fill="url(#barG)"/>
+            <rect x="208" y="52" width="76" height="48" rx="6" fill="url(#barG)"/>
+            <rect x="308" y="10" width="76" height="90" rx="6" fill="url(#barGt)"/>
+            <circle cx="346" cy="6" r="5" fill="#818cf8"/>
+            <rect x="408" y="58" width="76" height="42" rx="6" fill="url(#barG)" opacity=".55"/>
+            <rect x="508" y="72" width="76" height="28" rx="6" fill="url(#barG)" opacity=".38"/>
+            <rect x="608" y="62" width="76" height="38" rx="6" fill="url(#barG)" opacity=".38"/>
+            <text x="46"  y="108" text-anchor="middle" fill="#7c8a9e" font-size="12" font-family="Inter,sans-serif">Ma</text>
+            <text x="146" y="108" text-anchor="middle" fill="#7c8a9e" font-size="12" font-family="Inter,sans-serif">Di</text>
+            <text x="246" y="108" text-anchor="middle" fill="#7c8a9e" font-size="12" font-family="Inter,sans-serif">Wo</text>
+            <text x="346" y="108" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="700" font-family="Inter,sans-serif">Do</text>
+            <text x="446" y="108" text-anchor="middle" fill="#7c8a9e" font-size="12" font-family="Inter,sans-serif">Vr</text>
+            <text x="546" y="108" text-anchor="middle" fill="#7c8a9e" font-size="12" font-family="Inter,sans-serif">Za</text>
+            <text x="646" y="108" text-anchor="middle" fill="#7c8a9e" font-size="12" font-family="Inter,sans-serif">Zo</text>
+          </svg>
+        </div>
+        <div class="mrr-hero-footer">
+          <div class="mrr-footer-col">
+            <div class="mrr-footer-lbl">Vaste kosten</div>
+            <div class="mrr-footer-val neg" id="fdr-cost-fixed">-€58</div>
+          </div>
+          <div class="mrr-footer-col">
+            <div class="mrr-footer-lbl">Variabele kosten</div>
+            <div class="mrr-footer-val neg" id="fdr-cost-var">-€0</div>
+          </div>
+          <div class="mrr-footer-col">
+            <div class="mrr-footer-lbl">Nettowinst</div>
+            <div class="mrr-footer-val pos" id="fdr-profit-val">€0</div>
+          </div>
+          <div class="mrr-footer-col">
+            <div class="mrr-footer-lbl">Marge</div>
+            <div class="mrr-footer-val" id="fdr-profit-marge">—%</div>
+          </div>
+        </div>
       </div>
-      <div class="fdr-checklist" id="fdr-checklist"><div style="padding:24px 18px;color:var(--text-muted);font-size:13px">Laden...</div></div>
-      <div class="fdr-progress-bar-wrap"><div class="fdr-progress-bar" id="fdr-progress-bar" style="width:0%"></div></div>
-    </div>
-    <!-- Right col -->
-    <div class="fdr-right-col">
+
+      <!-- Today's Checklist -->
+      <div class="fdr-panel">
+        <div class="fdr-panel-hdr">
+          <span class="fdr-panel-title">Checklist van Vandaag</span>
+          <span class="fdr-task-progress" id="fdr-task-progress">0 / 0 voltooid</span>
+        </div>
+        <div class="fdr-checklist" id="fdr-checklist"><div style="padding:24px 20px;color:var(--text-m);font-size:13px">Laden...</div></div>
+        <div class="fdr-progress-bar-wrap"><div class="fdr-progress-bar" id="fdr-progress-bar" style="width:0%"></div></div>
+      </div>
+
+    </div><!-- /fdr-main-col -->
+
+    <!-- RIGHT: Sidebar -->
+    <div class="fdr-sidebar-col">
+
+      <!-- Quick stats 2×2 -->
       <div class="fdr-stats-grid fdr-panel">
-        <div class="fdr-stat"><div class="fdr-stat-val" id="f-stat-clients" style="color:var(--accent-bright)">—</div><div class="fdr-stat-lbl">Klanten</div></div>
+        <div class="fdr-stat"><div class="fdr-stat-val" id="f-stat-clients" style="color:var(--accent-b)">—</div><div class="fdr-stat-lbl">Klanten</div></div>
         <div class="fdr-stat"><div class="fdr-stat-val" id="f-stat-leads" style="color:var(--green)">—</div><div class="fdr-stat-lbl">Leads/mnd</div></div>
         <div class="fdr-stat"><div class="fdr-stat-val" id="f-stat-qual" style="color:var(--orange)">—%</div><div class="fdr-stat-lbl">Gekwalificeerd</div></div>
         <div class="fdr-stat"><div class="fdr-stat-val" id="f-stat-new" style="color:var(--red)">—</div><div class="fdr-stat-lbl">Ongelezen</div></div>
       </div>
+
+      <!-- Goal progress -->
       <div class="fdr-panel fdr-goal-panel">
         <div class="fdr-goal-hdr"><span>🎯 Doel — 5 klanten voor 20 jun</span><button class="fdr-refresh-btn" onclick="loadFounderData(true)">↻</button></div>
         <div class="fdr-goal-big">
@@ -485,41 +606,94 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="fdr-goal-bar-wrap"><div class="fdr-goal-bar-fill" id="fdr-goal-bar" style="width:0%"></div></div>
         <div class="fdr-goal-pct" id="fdr-goal-pct">0% bereikt</div>
       </div>
-      <div class="fdr-panel fdr-mrr-panel">
-        <div class="fdr-mrr-hdr">Maandelijks Inkomen (MRR)</div>
-        <div class="fdr-mrr-val" id="fdr-mrr-val">€0</div>
-        <div class="fdr-mrr-sub" id="fdr-mrr-sub">0 betalende klanten</div>
-        <div class="fdr-mrr-target"><span>→</span><span id="fdr-mrr-target">Doel: €1.245/mnd bij 5 klanten</span></div>
-        <hr class="fdr-profit-divider">
-        <div class="fdr-profit-rows">
-          <div class="fdr-profit-row"><span class="lbl">Vaste kosten</span><span class="val neg" id="fdr-cost-fixed">-€58</span></div>
-          <div class="fdr-profit-row"><span class="lbl">Variabele kosten</span><span class="val neg" id="fdr-cost-var">-€0</span></div>
-          <div class="fdr-profit-row total"><span class="lbl">Nettowinst</span><span class="val" id="fdr-profit-val">€0</span></div>
-        </div>
-        <div class="fdr-profit-marge" id="fdr-profit-marge">Marge: —%</div>
-      </div>
-      <div class="fdr-panel fdr-pipe-mini">
-        <div class="fdr-panel-title" style="margin-bottom:12px">Pipeline</div>
-        <div class="fdr-pipe-mini-cols" id="fdr-pipe-mini-cols"></div>
-        <div class="fdr-won-lost-row">
-          <span class="founder-badge-won" id="pipe-won-badge">✓ 0 Gewonnen</span>
-          <span class="founder-badge-lost" id="pipe-lost-badge">✗ 0 Verloren</span>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Follow-up alerts -->
+      <!-- Pipeline sidebar -->
+      <div class="fdr-sidebar-pipe">
+        <div class="fdr-sidebar-pipe-hdr">
+          <span class="fdr-sidebar-pipe-title">Sales Pipeline</span>
+          <button class="fdr-sidebar-see-all" onclick="document.getElementById('fdr-pipeline-section').scrollIntoView({behavior:'smooth'})">Alles bekijken →</button>
+        </div>
+        <div class="fdr-sidebar-pipe-body">
+          <div class="fdr-pipe-mini-cols" id="fdr-pipe-mini-cols"></div>
+          <div class="fdr-won-lost-row" style="margin-top:12px">
+            <span class="founder-badge-won" id="pipe-won-badge">✓ 0 Gewonnen</span>
+            <span class="founder-badge-lost" id="pipe-lost-badge">✗ 0 Verloren</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outreach Proposal-Progress widget -->
+      <div class="fdr-outreach-widget">
+        <div class="fdr-outreach-widget-hdr">
+          <span class="fdr-outreach-widget-title">Outreach Voortgang</span>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="fdr-outreach-week" id="fdr-outreach-week" style="font-size:11px;color:var(--text-m)">Week van —</span>
+            <button class="fdr-outreach-reset" onclick="resetOutreach()">↺ Reset</button>
+          </div>
+        </div>
+        <div class="fdr-outreach-metrics">
+          <div class="fdr-outreach-metric">
+            <div class="fdr-outreach-metric-num" id="or-dms" style="color:#6366f1">0</div>
+            <div class="fdr-outreach-metric-lbl">LinkedIn DMs<br><span style="color:var(--text-m);font-weight:400">doel 20/week</span></div>
+            <div class="fdr-outreach-metric-bars">
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:80%;background:#6366f1"></div></div>
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:55%;background:#6366f1;opacity:.6"></div></div>
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:90%;background:#6366f1;opacity:.4"></div></div>
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:40%;background:#6366f1;opacity:.25"></div></div>
+            </div>
+            <button class="fdr-outreach-plus" onclick="logOutreach('dms')">+</button>
+          </div>
+          <div class="fdr-outreach-metric">
+            <div class="fdr-outreach-metric-num" id="or-emails" style="color:#0a66c2">0</div>
+            <div class="fdr-outreach-metric-lbl">Cold Emails<br><span style="color:var(--text-m);font-weight:400">doel 10/week</span></div>
+            <div class="fdr-outreach-metric-bars">
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:60%;background:#0a66c2"></div></div>
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:75%;background:#0a66c2;opacity:.6"></div></div>
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:45%;background:#0a66c2;opacity:.4"></div></div>
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:85%;background:#0a66c2;opacity:.25"></div></div>
+            </div>
+            <button class="fdr-outreach-plus" onclick="logOutreach('emails')">+</button>
+          </div>
+          <div class="fdr-outreach-metric">
+            <div class="fdr-outreach-metric-num" id="or-demos" style="color:#22c55e">0</div>
+            <div class="fdr-outreach-metric-lbl">Demo's<br><span style="color:var(--text-m);font-weight:400">doel 3/week</span></div>
+            <div class="fdr-outreach-metric-bars">
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:35%;background:#22c55e"></div></div>
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:95%;background:#22c55e;opacity:.6"></div></div>
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:50%;background:#22c55e;opacity:.4"></div></div>
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:70%;background:#22c55e;opacity:.25"></div></div>
+            </div>
+            <button class="fdr-outreach-plus" onclick="logOutreach('demos')">+</button>
+          </div>
+          <div class="fdr-outreach-metric">
+            <div class="fdr-outreach-metric-num" id="or-follows" style="color:#f97316">0</div>
+            <div class="fdr-outreach-metric-lbl">Follow-ups<br><span style="color:var(--text-m);font-weight:400">doel 10/week</span></div>
+            <div class="fdr-outreach-metric-bars">
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:65%;background:#f97316"></div></div>
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:40%;background:#f97316;opacity:.6"></div></div>
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:80%;background:#f97316;opacity:.4"></div></div>
+              <div class="fdr-outreach-metric-bar-w"><div class="fdr-outreach-metric-bar-f" style="height:55%;background:#f97316;opacity:.25"></div></div>
+            </div>
+            <button class="fdr-outreach-plus" onclick="logOutreach('follows')">+</button>
+          </div>
+        </div>
+        <div style="display:none"><span id="or-total-pct"></span><div id="or-bar"></div></div>
+      </div>
+
+    </div><!-- /fdr-sidebar-col -->
+  </div><!-- /fdr-dash-grid -->
+
+  <!-- Follow-up alerts (full width) -->
   <div id="fdr-followup-section" style="display:none">
     <div class="fdr-section-hdr">
       <h3>⚠️ Vandaag opvolgen</h3>
-      <span style="font-size:11px;color:var(--text-muted)" id="fdr-followup-count"></span>
+      <span style="font-size:11px;color:var(--text-m)" id="fdr-followup-count"></span>
     </div>
     <div class="fdr-followup-wrap" id="fdr-followup-list"></div>
   </div>
 
-  <!-- Pipeline kanban -->
-  <div>
+  <!-- Pipeline kanban (full width) -->
+  <div id="fdr-pipeline-section">
     <div class="fdr-section-hdr"><h3>Sales Pipeline</h3></div>
     <div class="founder-pipeline-cols">
       <div class="founder-col">
@@ -540,13 +714,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
   </div>
 
-  <!-- Goals -->
+  <!-- Goals (full width) -->
   <div>
     <div class="fdr-section-hdr"><h3>Doelen</h3><button class="founder-btn-sm" onclick="openGoalModal(null)">+ Doel</button></div>
-    <div class="founder-goals-list" id="founder-goals-list"><div style="color:var(--text-muted);font-size:13px">Laden...</div></div>
+    <div class="founder-goals-list" id="founder-goals-list"><div style="color:var(--text-m);font-size:13px">Laden...</div></div>
   </div>
 
-  <!-- AI Advice -->
+  <!-- AI Advice (full width) -->
   <div class="founder-ai-box">
     <div class="founder-ai-header">
       <div class="founder-ai-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
@@ -559,7 +733,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </button>
   </div>
 
-  <!-- Content Hub -->
+  <!-- AI Tools Row: Content Hub + DM Generator -->
+  <div class="fdr-ai-tools-row">
   <div class="fdr-hub-box">
     <div class="fdr-hub-hdr">
       <div class="fdr-hub-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
@@ -653,25 +828,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       </a>
     </div>
   </div>
+  </div><!-- /fdr-ai-tools-row -->
 
-  <!-- Outreach Tracker -->
-  <div class="fdr-outreach-box">
-    <div class="fdr-outreach-hdr">
-      <div><div class="fdr-outreach-title">📣 Outreach Teller — Teljo</div><div class="fdr-outreach-week" id="fdr-outreach-week">Week van —</div></div>
-      <button class="fdr-outreach-reset" onclick="resetOutreach()">Week resetten</button>
-    </div>
-    <div class="fdr-outreach-body">
-      <div class="fdr-outreach-grid">
-        <div class="fdr-outreach-card"><div class="fdr-outreach-num" id="or-dms" style="color:#4f46e5">0</div><div class="fdr-outreach-info"><div class="fdr-outreach-name">LinkedIn DMs</div><div class="fdr-outreach-target">Doel: 20/week</div></div><button class="fdr-outreach-plus" onclick="logOutreach('dms')">+</button></div>
-        <div class="fdr-outreach-card"><div class="fdr-outreach-num" id="or-emails" style="color:#0a66c2">0</div><div class="fdr-outreach-info"><div class="fdr-outreach-name">Cold Emails</div><div class="fdr-outreach-target">Doel: 10/week</div></div><button class="fdr-outreach-plus" onclick="logOutreach('emails')">+</button></div>
-        <div class="fdr-outreach-card"><div class="fdr-outreach-num" id="or-demos" style="color:#22c55e">0</div><div class="fdr-outreach-info"><div class="fdr-outreach-name">Demo's gehad</div><div class="fdr-outreach-target">Doel: 3/week</div></div><button class="fdr-outreach-plus" onclick="logOutreach('demos')">+</button></div>
-        <div class="fdr-outreach-card"><div class="fdr-outreach-num" id="or-follows" style="color:#f97316">0</div><div class="fdr-outreach-info"><div class="fdr-outreach-name">Follow-ups</div><div class="fdr-outreach-target">Doel: 10/week</div></div><button class="fdr-outreach-plus" onclick="logOutreach('follows')">+</button></div>
-      </div>
-      <div class="fdr-outreach-footer"><span class="fdr-outreach-pct" id="or-total-pct">Totaal: 0 acties</span></div>
-      <div class="fdr-outreach-bar-wrap" style="margin-top:10px"><div class="fdr-outreach-bar-fill" id="or-bar" style="width:0%"></div></div>
-    </div>
-  </div>
-
+  <!-- Lower Row: Bouw + Docs -->
+  <div class="fdr-lower-row">
   <!-- Bouw Tracker -->
   <div class="fdr-bouw-box">
     <div class="fdr-bouw-hdr">
@@ -720,6 +880,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="fdr-docs-cfg-row" style="justify-content:flex-end"><button class="fdr-docs-cfg-save" onclick="saveDocsConfig()">Opslaan</button></div>
     </div>
   </div>
+  </div><!-- /fdr-lower-row -->
 
   <!-- AI Coach Chat -->
   <div class="fdr-chat-box">
