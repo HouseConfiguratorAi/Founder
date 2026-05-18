@@ -538,6 +538,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .fdr-live-actions{display:flex;gap:4px;justify-content:flex-end}
 .fdr-live-mini-btn{background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25);color:#818cf8;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s ease}
 .fdr-live-mini-btn:hover{background:rgba(99,102,241,.25);color:#fff}
+.fdr-live-test-toggle{background:none;border:1px solid var(--border);color:var(--text-s);padding:3px 8px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:.04em;transition:all .15s ease}
+.fdr-live-test-toggle:hover{color:var(--text);border-color:#6366f1}
+.fdr-live-test-toggle.on{background:rgba(245,158,11,.18);border-color:rgba(245,158,11,.5);color:#f59e0b}
+.fdr-live-row-test{opacity:.5}
+.fdr-live-row-test .fdr-live-name::after{content:' · TEST';color:#f59e0b;font-weight:700;font-size:10px}
 
 /* ── Meeting widget ─────────────────────────────────────────────────────── */
 .fdr-meeting-box{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:18px}
@@ -1569,15 +1574,15 @@ function getCasesCount() {
 }
 
 function updateGoalPanel() {
-  // Klanten: count of clients in the per-client MRR map that have a value > 0.
-  // Falls back to founderState.clients if MRR isn't entered yet (so the panel
-  // isn't totally empty for new accounts).
-  var mrrMap = (typeof loadMrrMap === 'function') ? loadMrrMap() : {};
+  // Klanten = count of MRR entries > 0, EXCLUDING test accounts.
+  // No fallback to founderState.clients: a customer who hasn't paid yet
+  // isn't a paying customer, and a test account isn't either.
+  var mrrMap  = (typeof loadMrrMap  === 'function') ? loadMrrMap()  : {};
+  var testMap = (typeof loadTestMap === 'function') ? loadTestMap() : {};
   var payingCount = 0, mrrTotal = 0;
   Object.keys(mrrMap).forEach(function(k) {
-    if (mrrMap[k] > 0) { payingCount++; mrrTotal += mrrMap[k]; }
+    if (mrrMap[k] > 0 && !testMap[k]) { payingCount++; mrrTotal += mrrMap[k]; }
   });
-  if (!payingCount) payingCount = founderState.clients || 0;
   var caseCount = getCasesCount();
 
   function setRow(prefix, current, target, fmt) {
@@ -2003,6 +2008,21 @@ function setClientMrr(id,amt){
   saveMrrMap(map);
   renderMrrTotals();
 }
+
+// Test-account flag — keyed by client id. Test accounts are visually
+// muted on Live Klanten, excluded from paying-count and MRR totals, and
+// don't move the goal panel needle. Persisted in localStorage.
+var TEST_KEY = 'hv-client-test-v1';
+function loadTestMap(){try{return JSON.parse(localStorage.getItem(TEST_KEY)||'{}');}catch(e){return{};}}
+function saveTestMap(m){try{localStorage.setItem(TEST_KEY,JSON.stringify(m));}catch(e){}}
+function toggleClientTest(id){
+  var map = loadTestMap();
+  if (map[id]) delete map[id]; else map[id] = true;
+  saveTestMap(map);
+  // Re-render the table so the row updates, and re-roll totals.
+  if (founderState._clientList) renderLiveClients(founderState._clientList);
+  renderMrrTotals();
+}
 function fmtEuro(n){return '€'+Math.round(n).toLocaleString('nl-BE');}
 function fmtTenure(firstLeadDate){
   if (!firstLeadDate) return '—';
@@ -2035,15 +2055,19 @@ function renderLiveClients(clients){
   }
   var ONLINE_WINDOW = 5*60*1000;
   var now = Date.now();
-  var mrrMap = loadMrrMap();
-  var onlineCount = 0;
+  var mrrMap  = loadMrrMap();
+  var testMap = loadTestMap();
+  var onlineCount = 0, realCount = 0;
   var rows = clients.map(function(c){
+    var isTest = !!testMap[c.id];
+    if (!isTest) realCount++;
     var isOnline = c.lastSeen && (now - c.lastSeen) < ONLINE_WINDOW;
-    if (isOnline) onlineCount++;
+    if (isOnline && !isTest) onlineCount++;
     var statusTxt = isOnline ? 'Online' : (c.lastSeen ? 'Laatst '+relTime(c.lastSeen) : 'Nooit ingelogd');
     var mrr = mrrMap[c.id] || 0;
     var dmAction = c.projectCode ? '<button class="fdr-live-mini-btn" onclick="quickDmForClient(\''+escHtml(c.id)+'\')">DM</button>' : '';
-    return '<tr>'+
+    var testBtn = '<button class="fdr-live-test-toggle'+(isTest?' on':'')+'" onclick="toggleClientTest(\''+escHtml(c.id)+'\')" title="Markeer als test-account zodat deze niet meetelt">'+(isTest?'Test':'test')+'</button>';
+    return '<tr'+(isTest?' class="fdr-live-row-test"':'')+'>'+
       '<td><div class="fdr-live-name">'+escHtml(c.naam||'—')+'</div>'+
         '<div class="fdr-live-meta">'+escHtml(c.projectCode||'')+'</div></td>'+
       '<td><span class="fdr-live-dot '+(isOnline?'online':'offline')+'"></span>'+
@@ -2052,11 +2076,11 @@ function renderLiveClients(clients){
       '<td class="fdr-live-stat" style="text-align:right">'+(c.totalLeads||0)+'</td>'+
       '<td class="fdr-live-stat" style="text-align:right">'+(c.appointments||0)+'</td>'+
       '<td style="text-align:right"><input class="fdr-live-mrr-input" type="number" min="0" step="1" value="'+mrr+'" onchange="setClientMrr(\''+escHtml(c.id)+'\',this.value)" placeholder="€"></td>'+
-      '<td class="fdr-live-actions">'+dmAction+'</td>'+
+      '<td class="fdr-live-actions">'+testBtn+dmAction+'</td>'+
     '</tr>';
   }).join('');
   tbody.innerHTML = rows;
-  if (count) count.innerHTML = '<span class="online-num">'+onlineCount+'</span> / '+clients.length+' online';
+  if (count) count.innerHTML = '<span class="online-num">'+onlineCount+'</span> / '+realCount+' online'+(realCount<clients.length?' <span style="opacity:.5">(+ '+(clients.length-realCount)+' test)</span>':'');
   renderMrrTotals();
 }
 function quickDmForClient(id){
@@ -2071,8 +2095,11 @@ function quickDmForClient(id){
 }
 function renderMrrTotals(){
   var map = loadMrrMap();
+  var testMap = loadTestMap();
   var total = 0, count = 0;
-  Object.keys(map).forEach(function(k){if(map[k]>0){total+=map[k];count++;}});
+  Object.keys(map).forEach(function(k){
+    if (map[k] > 0 && !testMap[k]) { total += map[k]; count++; }
+  });
   var v = document.getElementById('fdr-mrr-val');
   var s = document.getElementById('fdr-mrr-sub');
   if (v) v.textContent = fmtEuro(total);
